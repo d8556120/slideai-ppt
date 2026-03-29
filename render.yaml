@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: slideai-ppt
+    runtime: python
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && python main.py
+    envVars:
+      - key: OPENAI_BASE_URL
+        value: https://compass.llm.shopee.io/compass-api/v1
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: OPENAI_MODEL
+        value: gpt-4o
+      - key: PORT
+        value: 8000
