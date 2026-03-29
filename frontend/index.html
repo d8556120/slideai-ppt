@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SlideAI - AI Presentation Generator</title>
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #16161f;
+            --bg-card-hover: #1c1c28;
+            --border: #2a2a3a;
+            --border-focus: #6366f1;
+            --text-primary: #f0f0f5;
+            --text-secondary: #8888a0;
+            --text-muted: #555570;
+            --accent: #6366f1;
+            --accent-hover: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.25);
+            --green: #22c55e;
+            --amber: #f59e0b;
+            --pink: #ec4899;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0,0,0,0.4);
+            --transition: 0.2s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ── Background Gradient ─────────────────────────── */
+        .bg-glow {
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 600px;
+            background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Navigation ─────────────────────────────────── */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 10, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+
+        /* ── Hero Section ────────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 5rem 2rem 3rem;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+            padding: 6px 16px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+        .hero-badge .dot {
+            width: 8px; height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-hover) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 580px;
+            margin: 0 auto 2rem;
+        }
+
+        /* ── Main App Card ───────────────────────────────── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem 4rem;
+            position: relative;
+            z-index: 1;
+        }
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            box-shadow: var(--shadow);
+        }
+        .app-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .app-grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Form Elements ───────────────────────────────── */
+        .form-section { display: flex; flex-direction: column; gap: 1.5rem; }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        textarea {
+            width: 100%;
+            min-height: 140px;
+            padding: 14px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color var(--transition), box-shadow var(--transition);
+            outline: none;
+        }
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        textarea::placeholder { color: var(--text-muted); }
+
+        /* ── Template Selector ───────────────────────────── */
+        .template-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+        .template-card {
+            position: relative;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 0.75rem;
+            cursor: pointer;
+            transition: all var(--transition);
+            text-align: center;
+        }
+        .template-card:hover { border-color: var(--text-muted); background: var(--bg-card-hover); }
+        .template-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .template-card input { display: none; }
+        .template-preview {
+            width: 100%;
+            height: 48px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .template-preview.business { background: linear-gradient(135deg, #0F2B46, #0096D6); }
+        .template-preview.creative { background: linear-gradient(135deg, #1A0A2E, #A855F7, #F472B6); }
+        .template-preview.minimal { background: linear-gradient(135deg, #FAFAFA, #E0E0E0); }
+        .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
+
+        /* ── Slide Count ─────────────────────────────────── */
+        .count-options {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .count-btn {
+            flex: 1;
+            padding: 10px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .count-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
+        .count-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
+
+        /* ── Generate Button ─────────────────────────────── */
+        .btn-generate {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .btn-generate:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px var(--accent-glow);
+        }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .spinner {
+            width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            display: none;
+        }
+        .btn-generate.loading .spinner { display: block; }
+        .btn-generate.loading .btn-text { display: none; }
+        .btn-generate.loading .btn-loading-text { display: inline; }
+        .btn-loading-text { display: none; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Preview Panel ───────────────────────────────── */
+        .preview-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .preview-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .preview-placeholder {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            padding: 3rem 2rem;
+            text-align: center;
+            min-height: 400px;
+        }
+        .preview-placeholder svg {
+            width: 64px; height: 64px;
+            stroke: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+        .preview-placeholder p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .preview-content {
+            display: none;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            overflow-y: auto;
+            max-height: 520px;
+        }
+        .preview-content.show { display: flex; }
+        .preview-placeholder.hide { display: none; }
+
+        .preview-title-bar {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-radius: var(--radius-sm);
+            padding: 1.2rem 1.5rem;
+        }
+        .preview-title-bar h3 { font-size: 1.2rem; color: white; margin-bottom: 4px; }
+        .preview-title-bar p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
+
+        .preview-slide {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1.2rem;
+            transition: background var(--transition);
+        }
+        .preview-slide:hover { background: var(--bg-card-hover); }
+        .preview-slide-num {
+            font-size: 0.7rem;
+            color: var(--accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 4px;
+        }
+        .preview-slide h4 { font-size: 0.95rem; margin-bottom: 6px; color: var(--text-primary); }
+        .preview-slide ul {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .preview-slide li {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding-left: 14px;
+            position: relative;
+        }
+        .preview-slide li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 8px;
+            width: 5px; height: 5px;
+            background: var(--accent);
+            border-radius: 50%;
+        }
+
+        /* ── Download Button ─────────────────────────────── */
+        .btn-download {
+            display: none;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-download.show { display: flex; }
+        .btn-download:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(34,197,94,0.25); }
+
+        .result-meta {
+            display: none;
+            padding: 0.75rem 1rem;
+            background: rgba(34,197,94,0.08);
+            border: 1px solid rgba(34,197,94,0.2);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            color: var(--green);
+        }
+        .result-meta.show { display: block; }
+
+        /* ── Features Section ────────────────────────────── */
+        .features {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .features h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .features .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            transition: all var(--transition);
+        }
+        .feature-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+        }
+        .feature-icon {
+            width: 48px; height: 48px;
+            background: rgba(99,102,241,0.12);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 1rem;
+        }
+        .feature-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .feature-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* ── Pricing Section ─────────────────────────────── */
+        .pricing {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 1;
+        }
+        .pricing h2 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        .pricing .subtitle {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+        }
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; } }
+
+        .pricing-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            position: relative;
+            transition: all var(--transition);
+        }
+        .pricing-card:hover { transform: translateY(-3px); }
+        .pricing-card.featured {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 1px var(--accent), 0 16px 48px var(--accent-glow);
+        }
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -13px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            padding: 4px 16px;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+        .pricing-card h3 {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.25rem;
+        }
+        .price span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
+        .price-note { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
+        .pricing-features {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        .pricing-features li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+        .pricing-features li:last-child { border-bottom: none; }
+        .check { color: var(--green); font-weight: bold; font-size: 1.1rem; }
+        .btn-pricing {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-pricing:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-pricing.primary {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border-color: transparent;
+            color: white;
+        }
+        .btn-pricing.primary:hover { box-shadow: 0 8px 30px var(--accent-glow); }
+
+        /* ── Footer ──────────────────────────────────────── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Error Toast ─────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #dc2626;
+            color: white;
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(220,38,38,0.3);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* ── Demo Banner ─────────────────────────────────── */
+        .demo-banner {
+            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05));
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.85rem;
+            color: var(--amber);
+        }
+
+        /* ── Payment Banners ─────────────────────────────── */
+        .payment-banner {
+            max-width: 1200px;
+            margin: 0 auto 1rem;
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        .payment-banner.success {
+            background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.06));
+            border: 1px solid rgba(34,197,94,0.3);
+            color: var(--green);
+        }
+        .payment-banner.canceled {
+            background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.06));
+            border: 1px solid rgba(99,102,241,0.3);
+            color: var(--accent-hover);
+        }
+        .payment-banner .close-banner {
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: inherit;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity var(--transition);
+        }
+        .payment-banner .close-banner:hover { opacity: 1; }
+
+        /* ── Email Modal ─────────────────────────────────── */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.show { display: flex; }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            max-width: 440px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+        .modal-box h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+        }
+        .modal-box p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-box .plan-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        .modal-box input[type="email"] {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            margin-bottom: 1rem;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .modal-box input[type="email"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-glow);
+        }
+        .modal-box input[type="email"]::placeholder { color: var(--text-muted); }
+        .modal-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+        .modal-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition);
+            font-family: inherit;
+        }
+        .btn-modal-cancel {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        .btn-modal-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
+        .btn-modal-confirm {
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
+            border: none;
+            color: white;
+        }
+        .btn-modal-confirm:hover { box-shadow: 0 8px 30px var(--accent-glow); }
+        .btn-modal-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<!-- Payment Success/Cancel Banners -->
+<div class="payment-banner success" id="successBanner" style="display:none">
+    <span>&#10003;</span>
+    <span>Payment successful! You now have Pro/Team access. Enjoy unlimited presentations.</span>
+    <button class="close-banner" onclick="this.parentElement.style.display='none'">&times;</button>
+</div>
+<div class="payment-banner canceled" id="cancelBanner" style="display:none">
+    <span>&#8505;</span>
+    <span>Payment was canceled. You can try again anytime from the pricing section.</span>
+    <button class="close-banner" onclick="this.parentElement.style.display='none'">&times;</button>
+</div>
+
+<!-- Email Modal for Checkout -->
+<div class="modal-overlay" id="emailModal">
+    <div class="modal-box">
+        <div class="plan-badge" id="modalPlanBadge">PRO PLAN</div>
+        <h3>Enter your email to continue</h3>
+        <p>We'll use this email for your subscription and account access.</p>
+        <input type="email" id="modalEmailInput" placeholder="you@example.com" autocomplete="email">
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" onclick="closeEmailModal()">Cancel</button>
+            <button class="btn-modal-confirm" id="modalConfirmBtn" onclick="confirmCheckout()">Continue to Payment</button>
+        </div>
+    </div>
+</div>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">
+            <div class="logo-icon">S</div>
+            SlideAI
+        </a>
+        <ul class="nav-links">
+            <li><a href="#generator">Generator</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-badge">
+        <span class="dot"></span>
+        AI-Powered Presentation Generator
+    </div>
+    <h1>Create Stunning Presentations<br>in Seconds, Not Hours</h1>
+    <p>Describe your presentation topic and let AI craft professional, ready-to-present PowerPoint slides with beautiful designs.</p>
+</section>
+
+<!-- Generator App -->
+<div class="container" id="generator">
+    <div class="app-card">
+        <div class="demo-banner" id="demoBanner" style="display:none">
+            <span>&#9888;</span>
+            <span>Running in demo mode with sample content. Set OPENAI_API_KEY on the server for AI-generated presentations.</span>
+        </div>
+
+        <div class="app-grid">
+            <!-- Left: Form -->
+            <div class="form-section">
+                <div class="form-group">
+                    <label>Describe Your Presentation</label>
+                    <textarea id="promptInput" placeholder="e.g., A pitch deck for a fintech startup that provides AI-powered financial planning tools for millennials. Include market size, problem, solution, business model, team, and funding ask of $5M Series A."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Template Style</label>
+                    <div class="template-options">
+                        <label class="template-card selected" data-template="business">
+                            <input type="radio" name="template" value="business" checked>
+                            <div class="template-preview business"></div>
+                            <div class="template-name">Business</div>
+                        </label>
+                        <label class="template-card" data-template="creative">
+                            <input type="radio" name="template" value="creative">
+                            <div class="template-preview creative"></div>
+                            <div class="template-name">Creative</div>
+                        </label>
+                        <label class="template-card" data-template="minimal">
+                            <input type="radio" name="template" value="minimal">
+                            <div class="template-preview minimal"></div>
+                            <div class="template-name">Minimal</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Slide Count</label>
+                    <div class="count-options">
+                        <button class="count-btn" data-count="5">5</button>
+                        <button class="count-btn selected" data-count="8">8</button>
+                        <button class="count-btn" data-count="10">10</button>
+                        <button class="count-btn" data-count="15">15</button>
+                    </div>
+                </div>
+
+                <button class="btn-generate" id="generateBtn">
+                    <div class="spinner"></div>
+                    <span class="btn-text">Generate Presentation</span>
+                    <span class="btn-loading-text">Generating slides...</span>
+                </button>
+            </div>
+
+            <!-- Right: Preview -->
+            <div class="preview-section">
+                <div class="preview-header">
+                    <label>Preview</label>
+                </div>
+
+                <div class="preview-placeholder" id="previewPlaceholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>
+                    <p>Your presentation preview will appear here<br>after generation</p>
+                </div>
+
+                <div class="preview-content" id="previewContent"></div>
+
+                <div class="result-meta" id="resultMeta"></div>
+
+                <button class="btn-download" id="downloadBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Download .pptx
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features -->
+<section class="features" id="features">
+    <h2>Why SlideAI?</h2>
+    <p class="subtitle">Professional presentations without the hours of design work</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">&#9889;</div>
+            <h3>Instant Generation</h3>
+            <p>Describe what you need and get a complete, ready-to-present PowerPoint file in under 30 seconds. No design skills required.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#127912;</div>
+            <h3>Professional Templates</h3>
+            <p>Choose from expertly designed themes - corporate blue, modern creative, or clean minimal. Each optimized for readability and impact.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#129302;</div>
+            <h3>AI-Powered Content</h3>
+            <p>Advanced language models structure your ideas into compelling narratives with data points, speaker notes, and logical flow.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128196;</div>
+            <h3>Real .pptx Files</h3>
+            <p>Download native PowerPoint files that you can edit, customize, and present in Microsoft PowerPoint, Google Slides, or Keynote.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128200;</div>
+            <h3>Smart Structure</h3>
+            <p>AI automatically creates logical slide order - from introduction through key points to a strong conclusion with call-to-action.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">&#128274;</div>
+            <h3>Private & Secure</h3>
+            <p>Your presentations are generated on-demand and automatically deleted after 1 hour. We never store or share your content.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing -->
+<section class="pricing" id="pricing">
+    <h2>Simple, Transparent Pricing</h2>
+    <p class="subtitle">Start free, upgrade when you're ready</p>
+    <div class="pricing-grid">
+        <div class="pricing-card">
+            <h3>Free</h3>
+            <div class="price">$0<span>/mo</span></div>
+            <div class="price-note">For personal use</div>
+            <ul class="pricing-features">
+                <li><span class="check">&#10003;</span> 3 presentations / month</li>
+                <li><span class="check">&#10003;</span> All 3 templates</li>
+                <li><span class="check">&#10003;</span> Up to 10 slides</li>
+                <li><span class="check">&#10003;</span> .pptx download</li>
+                <li><span class="check">&#10003;</span> Basic content generation</li>
+            </ul>
+            <button class="btn-pricing" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">Get Started Free</button>
+        </div>
+        <div class="pricing-card featured">
+            <h3>Pro</h3>
+            <div class="price">$19<span>/mo</span></div>
+            <div class="price-note">For professionals</div>
+            <ul class="pricing-features">
+                <li><span class="check">&#10003;</span> Unlimited presentations</li>
+                <li><span class="check">&#10003;</span> All templates + premium</li>
+                <li><span class="check">&#10003;</span> Up to 30 slides</li>
+                <li><span class="check">&#10003;</span> Custom branding</li>
+                <li><span class="check">&#10003;</span> Priority generation</li>
+                <li><span class="check">&#10003;</span> Speaker notes included</li>
+            </ul>
+            <button class="btn-pricing primary" onclick="openEmailModal('pro')">Start Pro Trial</button>
+        </div>
+        <div class="pricing-card">
+            <h3>Team</h3>
+            <div class="price">$49<span>/mo</span></div>
+            <div class="price-note">Per team (up to 10 users)</div>
+            <ul class="pricing-features">
+                <li><span class="check">&#10003;</span> Everything in Pro</li>
+                <li><span class="check">&#10003;</span> Team workspace</li>
+                <li><span class="check">&#10003;</span> Brand kit management</li>
+                <li><span class="check">&#10003;</span> Template library</li>
+                <li><span class="check">&#10003;</span> API access</li>
+                <li><span class="check">&#10003;</span> Dedicated support</li>
+            </ul>
+            <button class="btn-pricing" onclick="openEmailModal('team')">Contact Sales</button>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>SlideAI &mdash; AI Presentation Generator &bull; Built with FastAPI &amp; python-pptx</p>
+</footer>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ── State ───────────────────────────────────────────
+    let selectedTemplate = 'business';
+    let selectedCount = 8;
+    let currentDownloadUrl = null;
+
+    // ── Template Selection ──────────────────────────────
+    document.querySelectorAll('.template-card').forEach(card => {
+        card.addEventListener('click', () => {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedTemplate = card.dataset.template;
+        });
+    });
+
+    // ── Slide Count Selection ───────────────────────────
+    document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            selectedCount = parseInt(btn.dataset.count);
+        });
+    });
+
+    // ── Show Toast ──────────────────────────────────────
+    function showToast(msg, duration = 4000) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), duration);
+    }
+
+    // ── Generate ────────────────────────────────────────
+    document.getElementById('generateBtn').addEventListener('click', async () => {
+        const prompt = document.getElementById('promptInput').value.trim();
+        if (!prompt) {
+            showToast('Please describe the presentation you want to create.');
+            return;
+        }
+        if (prompt.length < 5) {
+            showToast('Please provide a more detailed description (at least 5 characters).');
+            return;
+        }
+
+        const btn = document.getElementById('generateBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        // Reset preview
+        document.getElementById('previewContent').classList.remove('show');
+        document.getElementById('previewPlaceholder').classList.remove('hide');
+        document.getElementById('downloadBtn').classList.remove('show');
+        document.getElementById('resultMeta').classList.remove('show');
+
+        try {
+            const res = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: prompt,
+                    template: selectedTemplate,
+                    slide_count: selectedCount
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.detail || `Server error (${res.status})`);
+            }
+
+            const data = await res.json();
+            currentDownloadUrl = data.download_url;
+
+            // Render preview
+            renderPreview(data);
+
+        } catch (err) {
+            showToast('Generation failed: ' + err.message);
+        } finally {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    });
+
+    // ── Render Preview ──────────────────────────────────
+    function renderPreview(data) {
+        const container = document.getElementById('previewContent');
+        container.innerHTML = '';
+
+        // Title bar
+        const titleBar = document.createElement('div');
+        titleBar.className = 'preview-title-bar';
+        titleBar.innerHTML = `<h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.subtitle)}</p>`;
+        container.appendChild(titleBar);
+
+        // Slides
+        data.slides_preview.forEach((slide, i) => {
+            const div = document.createElement('div');
+            div.className = 'preview-slide';
+            let bulletsHtml = '';
+            if (slide.bullets && slide.bullets.length) {
+                bulletsHtml = '<ul>' + slide.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('') + '</ul>';
+            }
+            div.innerHTML = `
+                <div class="preview-slide-num">Slide ${i + 1}</div>
+                <h4>${escapeHtml(slide.title)}</h4>
+                ${bulletsHtml}
+            `;
+            container.appendChild(div);
+        });
+
+        // Show preview, hide placeholder
+        container.classList.add('show');
+        document.getElementById('previewPlaceholder').classList.add('hide');
+
+        // Show meta
+        const meta = document.getElementById('resultMeta');
+        meta.innerHTML = `&#10003; Generated ${data.slide_count} slides with "${selectedTemplate}" theme`;
+        meta.classList.add('show');
+
+        // Show download button
+        document.getElementById('downloadBtn').classList.add('show');
+    }
+
+    // ── Download ────────────────────────────────────────
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+        if (currentDownloadUrl) {
+            window.location.href = currentDownloadUrl;
+        }
+    });
+
+    // ── Escape HTML ─────────────────────────────────────
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text || '';
+        return div.innerHTML;
+    }
+
+    // ── Smooth Scroll ───────────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+
+    // ── Keyboard shortcut ───────────────────────────────
+    document.getElementById('promptInput').addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            document.getElementById('generateBtn').click();
+        }
+    });
+
+    // ── Payment Integration ────────────────────────────
+    let selectedPlan = '';
+    let userEmail = localStorage.getItem('slideai_email') || '';
+
+    // Check URL params for payment status
+    (function checkPaymentStatus() {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('success') === 'true') {
+            document.getElementById('successBanner').style.display = 'flex';
+            // Clean URL without reload
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+        if (params.get('canceled') === 'true') {
+            document.getElementById('cancelBanner').style.display = 'flex';
+            window.history.replaceState({}, '', window.location.pathname);
+        }
+    })();
+
+    function openEmailModal(plan) {
+        selectedPlan = plan;
+        const badge = document.getElementById('modalPlanBadge');
+        badge.textContent = plan === 'pro' ? 'PRO PLAN - $19/mo' : 'TEAM PLAN - $49/mo';
+        const emailInput = document.getElementById('modalEmailInput');
+        emailInput.value = userEmail;
+        document.getElementById('emailModal').classList.add('show');
+        setTimeout(() => emailInput.focus(), 100);
+    }
+
+    function closeEmailModal() {
+        document.getElementById('emailModal').classList.remove('show');
+        selectedPlan = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('emailModal').addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) closeEmailModal();
+    });
+
+    // Close modal on Escape
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeEmailModal();
+    });
+
+    // Enter key in email input triggers confirm
+    document.getElementById('modalEmailInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') confirmCheckout();
+    });
+
+    async function confirmCheckout() {
+        const email = document.getElementById('modalEmailInput').value.trim();
+        if (!email || !email.includes('@')) {
+            showToast('Please enter a valid email address.');
+            return;
+        }
+
+        // Save email for future use
+        userEmail = email;
+        localStorage.setItem('slideai_email', email);
+
+        const confirmBtn = document.getElementById('modalConfirmBtn');
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'Processing...';
+
+        try {
+            const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    plan: selectedPlan,
+                    email: email,
+                    success_url: window.location.origin + '/?success=true',
+                    cancel_url: window.location.origin + '/?canceled=true'
+                })
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                throw new Error(err.detail || 'Checkout failed');
+            }
+
+            const data = await res.json();
+            closeEmailModal();
+
+            // Redirect to Stripe Checkout (or demo success page)
+            window.location.href = data.checkout_url;
+
+        } catch (err) {
+            showToast('Checkout error: ' + err.message);
+        } finally {
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = 'Continue to Payment';
+        }
+    }
+
+    // ── Send email header with generate requests ───────
+    const originalFetch = window.fetch;
+    window.fetch = function(url, options = {}) {
+        if (typeof url === 'string' && url.includes('/api/generate') && userEmail) {
+            options.headers = options.headers || {};
+            if (options.headers instanceof Headers) {
+                options.headers.set('X-User-Email', userEmail);
+            } else {
+                options.headers['X-User-Email'] = userEmail;
+            }
+        }
+        return originalFetch.call(this, url, options);
+    };
+</script>
+
+</body>
+</html>

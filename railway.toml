@@ -1,0 +1,18 @@
+[build]
+  builder = "NIXPACKS"
+
+[deploy]
+  startCommand = "cd backend && python main.py"
+  healthcheckPath = "/api/templates"
+  restartPolicyType = "ON_FAILURE"
+
+[[services]]
+  name = "ai-ppt-saas"
+  type = "web"
+  env = "python"
+  plan = "starter"
+
+  [services.envVars]
+    PORT = "8000"
+    OPENAI_BASE_URL = ""
+    OPENAI_API_KEY = ""
