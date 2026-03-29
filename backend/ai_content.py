@@ -475,9 +475,19 @@ def _build_system_prompt(language: str = "English", tone: str = "professional",
     else:
         stats_instruction = "\n- Focus on qualitative insights and strategic points rather than specific numbers or statistics."
 
+    language_instruction = ""
+    if language != "English":
+        language_instruction = f"""
+
+CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL content in {language}.
+Every single title, bullet point, speaker note, subtitle MUST be in {language}.
+Do NOT use English anywhere in the content. This is the most important rule.
+If the topic is given in English, translate it and write everything in {language}.
+IMPORTANT: For non-ASCII characters, you MUST use JSON Unicode escape sequences (e.g. \\u4f60\\u597d for Chinese characters). This is required for proper JSON encoding."""
+
     return f"""You are SlideAI, an expert presentation content generator. Given a topic or description, generate structured PowerPoint content in JSON format.
 
-LANGUAGE: Generate ALL content (titles, bullets, speaker notes) in {language}.
+LANGUAGE: Generate ALL content (titles, bullets, speaker notes) in {language}.{language_instruction}
 
 TONE: {tone_guidance.get(tone, tone_guidance["professional"])}
 
@@ -540,15 +550,19 @@ async def generate_content(prompt: str, slide_count: int = 8,
 
     system_prompt = _build_system_prompt(language, tone, audience, include_statistics)
 
+    language_reminder = ""
+    if language != "English":
+        language_reminder = f"\n\nREMINDER: Write EVERYTHING in {language}. Use JSON Unicode escape sequences (\\uXXXX) for all non-ASCII characters. Do NOT use English."
+
     user_message = f"""Create a {tone} presentation with exactly {slide_count - 2} content slides (plus title and closing slides) about the following topic:
 
 {prompt}
 
 Target audience: {audience}
-Language: {language}
+Language: ALL content must be written in {language}.
 {"Include concrete statistics and data points." if include_statistics else "Focus on qualitative insights."}
 
-Remember to return ONLY valid JSON matching the required structure."""
+Remember to return ONLY valid JSON matching the required structure.{language_reminder}"""
 
     max_attempts = 2  # Retry once on failure
 
