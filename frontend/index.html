@@ -38,718 +38,266 @@
             overflow-x: hidden;
         }
 
-        /* ── Background Gradient ─────────────────────────── */
         .bg-glow {
-            position: fixed;
-            top: -200px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 600px;
+            position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+            width: 800px; height: 600px;
             background: radial-gradient(ellipse, var(--accent-glow) 0%, transparent 70%);
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
 
         /* ── Navigation ─────────────────────────────────── */
         nav {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(10, 10, 15, 0.85);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 0 2rem;
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(10, 10, 15, 0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border); padding: 0 2rem;
         }
         .nav-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 64px;
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between; height: 64px;
         }
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            text-decoration: none;
-        }
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--accent), var(--pink));
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            list-style: none;
-        }
-        .nav-links a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color var(--transition);
-        }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 700; color: var(--text-primary); text-decoration: none; }
+        .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--accent), var(--pink)); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; transition: color var(--transition); }
         .nav-links a:hover { color: var(--text-primary); }
+        @media (max-width: 600px) { .nav-links { gap: 1rem; } .nav-links a { font-size: 0.8rem; } }
 
         /* ── Hero Section ────────────────────────────────── */
-        .hero {
-            text-align: center;
-            padding: 5rem 2rem 3rem;
-            position: relative;
-            z-index: 1;
-        }
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 100px;
-            padding: 6px 16px;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-        .hero-badge .dot {
-            width: 8px; height: 8px;
-            background: var(--green);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .hero h1 {
-            font-size: clamp(2.2rem, 5vw, 3.5rem);
-            font-weight: 800;
-            line-height: 1.15;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-hover) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero p {
-            font-size: 1.15rem;
-            color: var(--text-secondary);
-            max-width: 580px;
-            margin: 0 auto 2rem;
-        }
+        .hero { text-align: center; padding: 5rem 2rem 3rem; position: relative; z-index: 1; }
+        .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; padding: 6px 16px; font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+        .hero-badge .dot { width: 8px; height: 8px; background: var(--green); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .hero h1 { font-size: clamp(2.2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15; margin-bottom: 1rem; background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-hover) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero p { font-size: 1.15rem; color: var(--text-secondary); max-width: 580px; margin: 0 auto 1.5rem; }
+        .hero-stats { display: flex; gap: 2.5rem; justify-content: center; flex-wrap: wrap; }
+        .hero-stat { text-align: center; }
+        .hero-stat .num { font-size: 1.8rem; font-weight: 800; color: var(--accent-hover); }
+        .hero-stat .label { font-size: 0.8rem; color: var(--text-muted); }
 
-        /* ── Main App Card ───────────────────────────────── */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 2rem 4rem;
-            position: relative;
-            z-index: 1;
-        }
-        .app-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            box-shadow: var(--shadow);
-        }
-        .app-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        @media (max-width: 768px) {
-            .app-grid { grid-template-columns: 1fr; }
-        }
+        /* ── Container & App Card ─────────────────────────── */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; position: relative; z-index: 1; }
+        .app-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow); }
+        .app-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+        @media (max-width: 768px) { .app-grid { grid-template-columns: 1fr; } }
 
         /* ── Form Elements ───────────────────────────────── */
-        .form-section { display: flex; flex-direction: column; gap: 1.5rem; }
-
-        label {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        .form-section { display: flex; flex-direction: column; gap: 1.2rem; }
+        label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; }
         .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
-
-        textarea {
-            width: 100%;
-            min-height: 140px;
-            padding: 14px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            resize: vertical;
-            transition: border-color var(--transition), box-shadow var(--transition);
-            outline: none;
-        }
-        textarea:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
+        textarea { width: 100%; min-height: 120px; padding: 14px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.95rem; font-family: inherit; resize: vertical; transition: border-color var(--transition), box-shadow var(--transition); outline: none; }
+        textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
         textarea::placeholder { color: var(--text-muted); }
+        .char-count { font-size: 0.75rem; color: var(--text-muted); text-align: right; margin-top: -4px; }
+
+        /* ── Language Selector ────────────────────────────── */
+        .lang-select { width: 100%; padding: 10px 14px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.9rem; font-family: inherit; outline: none; cursor: pointer; }
+        .lang-select:focus { border-color: var(--accent); }
+        .lang-select option { background: var(--bg-secondary); color: var(--text-primary); }
 
         /* ── Template Selector ───────────────────────────── */
-        .template-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-        }
-        .template-card {
-            position: relative;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 1rem 0.75rem;
-            cursor: pointer;
-            transition: all var(--transition);
-            text-align: center;
-        }
+        .template-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+        .template-card { position: relative; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 0.75rem; cursor: pointer; transition: all var(--transition); text-align: center; }
         .template-card:hover { border-color: var(--text-muted); background: var(--bg-card-hover); }
         .template-card.selected { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
         .template-card input { display: none; }
-        .template-preview {
-            width: 100%;
-            height: 48px;
-            border-radius: 6px;
-            margin-bottom: 8px;
-        }
+        .template-preview { width: 100%; height: 48px; border-radius: 6px; margin-bottom: 8px; }
         .template-preview.business { background: linear-gradient(135deg, #0F2B46, #0096D6); }
         .template-preview.creative { background: linear-gradient(135deg, #1A0A2E, #A855F7, #F472B6); }
         .template-preview.minimal { background: linear-gradient(135deg, #FAFAFA, #E0E0E0); }
         .template-name { font-size: 0.8rem; font-weight: 600; color: var(--text-primary); }
 
         /* ── Slide Count ─────────────────────────────────── */
-        .count-options {
-            display: flex;
-            gap: 0.5rem;
-        }
-        .count-btn {
-            flex: 1;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition);
-            font-family: inherit;
-        }
+        .count-options { display: flex; gap: 0.5rem; }
+        .count-btn { flex: 1; padding: 10px; background: var(--bg-secondary); border: 2px solid var(--border); border-radius: var(--radius-sm); color: var(--text-secondary); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all var(--transition); font-family: inherit; }
         .count-btn:hover { border-color: var(--text-muted); color: var(--text-primary); }
         .count-btn.selected { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.08); }
 
-        /* ── Generate Button ─────────────────────────────── */
-        .btn-generate {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border: none;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-size: 1.05rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all var(--transition);
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .btn-generate:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 8px 30px var(--accent-glow);
-        }
-        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        /* ── Advanced Options ─────────────────────────────── */
+        .advanced-toggle { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 0.85rem; color: var(--text-secondary); padding: 8px 0; border: none; background: none; font-family: inherit; }
+        .advanced-toggle:hover { color: var(--text-primary); }
+        .advanced-toggle .arrow { transition: transform 0.2s; font-size: 0.7rem; }
+        .advanced-toggle.open .arrow { transform: rotate(90deg); }
+        .advanced-panel { display: none; flex-direction: column; gap: 1rem; padding: 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+        .advanced-panel.show { display: flex; }
+        .pill-group { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+        .pill { padding: 6px 14px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 100px; font-size: 0.8rem; color: var(--text-secondary); cursor: pointer; transition: all var(--transition); font-family: inherit; }
+        .pill:hover { border-color: var(--text-muted); color: var(--text-primary); }
+        .pill.selected { border-color: var(--accent); color: var(--accent); background: rgba(99,102,241,0.1); }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; }
+        .toggle-switch { position: relative; width: 44px; height: 24px; }
+        .toggle-switch input { display: none; }
+        .toggle-slider { position: absolute; inset: 0; background: var(--border); border-radius: 12px; cursor: pointer; transition: background 0.2s; }
+        .toggle-slider::before { content: ''; position: absolute; left: 3px; top: 3px; width: 18px; height: 18px; background: white; border-radius: 50%; transition: transform 0.2s; }
+        .toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+        .toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); }
 
-        .spinner {
-            width: 20px; height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            display: none;
-        }
+        /* ── Generate Button ─────────────────────────────── */
+        .btn-generate { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--accent), #8b5cf6); border: none; border-radius: var(--radius-sm); color: white; font-size: 1.05rem; font-weight: 700; cursor: pointer; transition: all var(--transition); font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-generate:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 30px var(--accent-glow); }
+        .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .spinner { width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; display: none; }
         .btn-generate.loading .spinner { display: block; }
         .btn-generate.loading .btn-text { display: none; }
         .btn-generate.loading .btn-loading-text { display: inline; }
         .btn-loading-text { display: none; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ── Preview Panel ───────────────────────────────── */
-        .preview-section {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .preview-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .preview-placeholder {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--bg-secondary);
-            border: 2px dashed var(--border);
-            border-radius: var(--radius-sm);
-            padding: 3rem 2rem;
-            text-align: center;
-            min-height: 400px;
-        }
-        .preview-placeholder svg {
-            width: 64px; height: 64px;
-            stroke: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-        .preview-placeholder p { color: var(--text-muted); font-size: 0.95rem; }
+        /* ── Progress Steps ──────────────────────────────── */
+        .progress-steps { display: none; padding: 0.75rem 1rem; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+        .progress-steps.show { display: block; }
+        .progress-step { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 0.8rem; color: var(--text-muted); transition: color 0.3s; }
+        .progress-step.active { color: var(--accent-hover); }
+        .progress-step.done { color: var(--green); }
+        .progress-step .step-icon { width: 16px; text-align: center; }
 
-        .preview-content {
-            display: none;
-            flex-direction: column;
-            gap: 0.5rem;
-            flex: 1;
-            overflow-y: auto;
-            max-height: 520px;
-        }
+        /* ── Preview Panel ───────────────────────────────── */
+        .preview-section { display: flex; flex-direction: column; gap: 1rem; }
+        .preview-header { display: flex; align-items: center; justify-content: space-between; }
+        .preview-placeholder { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--bg-secondary); border: 2px dashed var(--border); border-radius: var(--radius-sm); padding: 3rem 2rem; text-align: center; min-height: 400px; }
+        .preview-placeholder svg { width: 64px; height: 64px; stroke: var(--text-muted); margin-bottom: 1rem; }
+        .preview-placeholder p { color: var(--text-muted); font-size: 0.95rem; }
+        .preview-content { display: none; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; max-height: 520px; }
         .preview-content.show { display: flex; }
         .preview-placeholder.hide { display: none; }
-
-        .preview-title-bar {
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-radius: var(--radius-sm);
-            padding: 1.2rem 1.5rem;
-        }
+        .preview-title-bar { background: linear-gradient(135deg, var(--accent), #8b5cf6); border-radius: var(--radius-sm); padding: 1.2rem 1.5rem; }
         .preview-title-bar h3 { font-size: 1.2rem; color: white; margin-bottom: 4px; }
         .preview-title-bar p { font-size: 0.85rem; color: rgba(255,255,255,0.7); }
-
-        .preview-slide {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            padding: 1rem 1.2rem;
-            transition: background var(--transition);
-        }
+        .preview-slide { background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.2rem; transition: background var(--transition); }
         .preview-slide:hover { background: var(--bg-card-hover); }
-        .preview-slide-num {
-            font-size: 0.7rem;
-            color: var(--accent);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            margin-bottom: 4px;
-        }
+        .preview-slide-num { font-size: 0.7rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; }
         .preview-slide h4 { font-size: 0.95rem; margin-bottom: 6px; color: var(--text-primary); }
-        .preview-slide ul {
-            list-style: none;
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-        .preview-slide li {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            padding-left: 14px;
-            position: relative;
-        }
-        .preview-slide li::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 8px;
-            width: 5px; height: 5px;
-            background: var(--accent);
-            border-radius: 50%;
-        }
+        .preview-slide ul { list-style: none; display: flex; flex-direction: column; gap: 3px; }
+        .preview-slide li { font-size: 0.8rem; color: var(--text-secondary); padding-left: 14px; position: relative; }
+        .preview-slide li::before { content: ''; position: absolute; left: 0; top: 8px; width: 5px; height: 5px; background: var(--accent); border-radius: 50%; }
 
-        /* ── Download Button ─────────────────────────────── */
-        .btn-download {
-            display: none;
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #22c55e, #16a34a);
-            border: none;
-            border-radius: var(--radius-sm);
-            color: white;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all var(--transition);
-            font-family: inherit;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .btn-download.show { display: flex; }
-        .btn-download:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(34,197,94,0.25); }
+        /* ── Editable Outline ─────────────────────────────── */
+        .preview-slide.editable h4 { cursor: text; border-bottom: 1px dashed transparent; transition: border-color 0.2s; }
+        .preview-slide.editable h4:hover { border-bottom-color: var(--accent); }
+        .preview-slide.editable li { cursor: text; }
+        .preview-slide.editable li:hover { color: var(--text-primary); }
+        .edit-hint { font-size: 0.75rem; color: var(--text-muted); font-style: italic; margin-top: 4px; }
+        .btn-regenerate { display: none; width: 100%; padding: 12px; background: rgba(99,102,241,0.12); border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--accent-hover); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+        .btn-regenerate.show { display: block; }
+        .btn-regenerate:hover { background: rgba(99,102,241,0.2); }
 
-        .result-meta {
-            display: none;
-            padding: 0.75rem 1rem;
-            background: rgba(34,197,94,0.08);
-            border: 1px solid rgba(34,197,94,0.2);
-            border-radius: var(--radius-sm);
-            font-size: 0.85rem;
-            color: var(--green);
-        }
+        /* ── Action Buttons Row ──────────────────────────── */
+        .action-buttons { display: none; gap: 0.5rem; }
+        .action-buttons.show { display: flex; }
+        .btn-action { flex: 1; padding: 12px 8px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-secondary); color: var(--text-secondary); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all var(--transition); font-family: inherit; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .btn-action:hover { border-color: var(--accent); color: var(--text-primary); }
+        .btn-action.primary { background: linear-gradient(135deg, #22c55e, #16a34a); border-color: transparent; color: white; }
+        .btn-action.primary:hover { box-shadow: 0 8px 30px rgba(34,197,94,0.25); transform: translateY(-1px); }
+
+        .result-meta { display: none; padding: 0.75rem 1rem; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: var(--radius-sm); font-size: 0.85rem; color: var(--green); }
         .result-meta.show { display: block; }
 
-        /* ── Features Section ────────────────────────────── */
-        .features {
-            max-width: 1200px;
-            margin: 4rem auto;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        .features h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        .features .subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-        }
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-        }
-        @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+        /* ── History Section ──────────────────────────────── */
+        .history-section { max-width: 1200px; margin: 0 auto 3rem; padding: 0 2rem; position: relative; z-index: 1; }
+        .history-section h3 { font-size: 1.1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .history-section h3 .badge { background: var(--accent); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 100px; }
+        .history-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+        .history-item { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem; cursor: pointer; transition: all var(--transition); }
+        .history-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .history-item h4 { font-size: 0.9rem; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .history-item .meta { font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .history-clear { background: none; border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 6px 14px; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+        .history-clear:hover { border-color: #dc2626; color: #dc2626; }
 
-        .feature-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2rem;
-            transition: all var(--transition);
-        }
-        .feature-card:hover {
-            border-color: var(--accent);
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-        .feature-icon {
-            width: 48px; height: 48px;
-            background: rgba(99,102,241,0.12);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            margin-bottom: 1rem;
-        }
+        /* ── Features Section ────────────────────────────── */
+        .features { max-width: 1200px; margin: 4rem auto; padding: 0 2rem; position: relative; z-index: 1; }
+        .features h2 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+        .features .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
+        .features-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        @media (max-width: 768px) { .features-grid { grid-template-columns: 1fr; } }
+        .feature-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; transition: all var(--transition); }
+        .feature-card:hover { border-color: var(--accent); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(99,102,241,0.12); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; margin-bottom: 1rem; }
         .feature-card h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
         .feature-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
 
-        /* ── Pricing Section ─────────────────────────────── */
-        .pricing {
-            max-width: 1200px;
-            margin: 5rem auto;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 1;
-        }
-        .pricing h2 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        .pricing .subtitle {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-        }
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            align-items: start;
-        }
-        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; } }
+        /* ── Testimonials ────────────────────────────────── */
+        .testimonials { max-width: 1200px; margin: 4rem auto; padding: 0 2rem; position: relative; z-index: 1; }
+        .testimonials h2 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+        .testimonials .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
+        .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+        @media (max-width: 768px) { .testimonials-grid { grid-template-columns: 1fr; } }
+        .testimonial-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; }
+        .testimonial-stars { color: var(--amber); font-size: 1rem; margin-bottom: 1rem; letter-spacing: 2px; }
+        .testimonial-card blockquote { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1.2rem; font-style: italic; }
+        .testimonial-author { display: flex; align-items: center; gap: 10px; }
+        .testimonial-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--pink)); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; color: white; }
+        .testimonial-name { font-size: 0.85rem; font-weight: 600; }
+        .testimonial-role { font-size: 0.75rem; color: var(--text-muted); }
 
-        .pricing-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2.5rem 2rem;
-            text-align: center;
-            position: relative;
-            transition: all var(--transition);
-        }
+        /* ── Pricing Section ─────────────────────────────── */
+        .pricing { max-width: 1200px; margin: 5rem auto; padding: 0 2rem; position: relative; z-index: 1; }
+        .pricing h2 { text-align: center; font-size: 2rem; margin-bottom: 0.5rem; }
+        .pricing .subtitle { text-align: center; color: var(--text-secondary); margin-bottom: 3rem; }
+        .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; align-items: start; }
+        @media (max-width: 768px) { .pricing-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; } }
+        .pricing-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem 2rem; text-align: center; position: relative; transition: all var(--transition); }
         .pricing-card:hover { transform: translateY(-3px); }
-        .pricing-card.featured {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 1px var(--accent), 0 16px 48px var(--accent-glow);
-        }
-        .pricing-card.featured::before {
-            content: 'MOST POPULAR';
-            position: absolute;
-            top: -13px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            color: white;
-            padding: 4px 16px;
-            border-radius: 100px;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 0.08em;
-        }
-        .pricing-card h3 {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin-bottom: 1rem;
-        }
-        .price {
-            font-size: 3rem;
-            font-weight: 800;
-            margin-bottom: 0.25rem;
-        }
+        .pricing-card.featured { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 16px 48px var(--accent-glow); }
+        .pricing-card.featured::before { content: 'MOST POPULAR'; position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--accent), #8b5cf6); color: white; padding: 4px 16px; border-radius: 100px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; }
+        .pricing-card h3 { font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 1rem; }
+        .price { font-size: 3rem; font-weight: 800; margin-bottom: 0.25rem; }
         .price span { font-size: 1rem; font-weight: 400; color: var(--text-secondary); }
         .price-note { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 2rem; }
-        .pricing-features {
-            list-style: none;
-            text-align: left;
-            margin-bottom: 2rem;
-        }
-        .pricing-features li {
-            padding: 8px 0;
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--border);
-        }
+        .pricing-features { list-style: none; text-align: left; margin-bottom: 2rem; }
+        .pricing-features li { padding: 8px 0; font-size: 0.9rem; color: var(--text-secondary); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border); }
         .pricing-features li:last-child { border-bottom: none; }
         .check { color: var(--green); font-weight: bold; font-size: 1.1rem; }
-        .btn-pricing {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            background: transparent;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition);
-            font-family: inherit;
-        }
+        .btn-pricing { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: var(--radius-sm); background: transparent; color: var(--text-primary); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all var(--transition); font-family: inherit; }
         .btn-pricing:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-pricing.primary {
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border-color: transparent;
-            color: white;
-        }
+        .btn-pricing.primary { background: linear-gradient(135deg, var(--accent), #8b5cf6); border-color: transparent; color: white; }
         .btn-pricing.primary:hover { box-shadow: 0 8px 30px var(--accent-glow); }
 
         /* ── Footer ──────────────────────────────────────── */
-        footer {
-            border-top: 1px solid var(--border);
-            padding: 2rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            position: relative;
-            z-index: 1;
-        }
+        footer { border-top: 1px solid var(--border); padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.85rem; position: relative; z-index: 1; }
 
-        /* ── Error Toast ─────────────────────────────────── */
-        .toast {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: #dc2626;
-            color: white;
-            padding: 14px 24px;
-            border-radius: var(--radius-sm);
-            font-size: 0.9rem;
-            box-shadow: 0 8px 30px rgba(220,38,38,0.3);
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
+        /* ── Toast ───────────────────────────────────────── */
+        .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 0.9rem; box-shadow: 0 8px 30px rgba(0,0,0,0.3); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 1000; }
         .toast.show { transform: translateY(0); opacity: 1; }
+        .toast.error { background: #dc2626; color: white; }
+        .toast.success { background: var(--green); color: white; }
 
         /* ── Demo Banner ─────────────────────────────────── */
-        .demo-banner {
-            background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05));
-            border: 1px solid rgba(245,158,11,0.2);
-            border-radius: var(--radius-sm);
-            padding: 12px 16px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.85rem;
-            color: var(--amber);
-        }
+        .demo-banner { background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.05)); border: 1px solid rgba(245,158,11,0.2); border-radius: var(--radius-sm); padding: 12px 16px; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--amber); }
 
-        /* ── Payment Banners ─────────────────────────────── */
-        .payment-banner {
-            max-width: 1200px;
-            margin: 0 auto 1rem;
-            padding: 14px 24px;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            position: relative;
-            z-index: 1;
-        }
-        .payment-banner.success {
-            background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.06));
-            border: 1px solid rgba(34,197,94,0.3);
-            color: var(--green);
-        }
-        .payment-banner.canceled {
-            background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.06));
-            border: 1px solid rgba(99,102,241,0.3);
-            color: var(--accent-hover);
-        }
-        .payment-banner .close-banner {
-            margin-left: auto;
-            background: none;
-            border: none;
-            color: inherit;
-            font-size: 1.2rem;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity var(--transition);
-        }
-        .payment-banner .close-banner:hover { opacity: 1; }
-
-        /* ── Email Modal ─────────────────────────────────── */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
+        /* ── Payment Banners & Modal ─────────────────────── */
+        .payment-banner { max-width: 1200px; margin: 0 auto 1rem; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 10px; position: relative; z-index: 1; }
+        .payment-banner.success { background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.06)); border: 1px solid rgba(34,197,94,0.3); color: var(--green); }
+        .payment-banner.canceled { background: linear-gradient(135deg, rgba(99,102,241,0.12), rgba(99,102,241,0.06)); border: 1px solid rgba(99,102,241,0.3); color: var(--accent-hover); }
+        .payment-banner .close-banner { margin-left: auto; background: none; border: none; color: inherit; font-size: 1.2rem; cursor: pointer; opacity: 0.7; }
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center; }
         .modal-overlay.show { display: flex; }
-        .modal-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 2.5rem;
-            max-width: 440px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            text-align: center;
-        }
-        .modal-box h3 {
-            font-size: 1.3rem;
-            margin-bottom: 0.5rem;
-        }
-        .modal-box p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1.5rem;
-        }
-        .modal-box .plan-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            color: white;
-            padding: 4px 14px;
-            border-radius: 100px;
-            font-size: 0.8rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        .modal-box input[type="email"] {
-            width: 100%;
-            padding: 12px 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: inherit;
-            outline: none;
-            margin-bottom: 1rem;
-            transition: border-color var(--transition), box-shadow var(--transition);
-        }
-        .modal-box input[type="email"]:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px var(--accent-glow);
-        }
-        .modal-box input[type="email"]::placeholder { color: var(--text-muted); }
-        .modal-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-        .modal-actions button {
-            flex: 1;
-            padding: 12px;
-            border-radius: var(--radius-sm);
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all var(--transition);
-            font-family: inherit;
-        }
-        .btn-modal-cancel {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-        }
-        .btn-modal-cancel:hover { border-color: var(--text-muted); color: var(--text-primary); }
-        .btn-modal-confirm {
-            background: linear-gradient(135deg, var(--accent), #8b5cf6);
-            border: none;
-            color: white;
-        }
-        .btn-modal-confirm:hover { box-shadow: 0 8px 30px var(--accent-glow); }
-        .btn-modal-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+        .modal-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; max-width: 440px; width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.5); text-align: center; }
+        .modal-box h3 { font-size: 1.3rem; margin-bottom: 0.5rem; }
+        .modal-box p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem; }
+        .modal-box .plan-badge { display: inline-block; background: linear-gradient(135deg, var(--accent), #8b5cf6); color: white; padding: 4px 14px; border-radius: 100px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1rem; }
+        .modal-box input[type="email"] { width: 100%; padding: 12px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-primary); font-size: 0.95rem; font-family: inherit; outline: none; margin-bottom: 1rem; }
+        .modal-box input[type="email"]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+        .modal-actions { display: flex; gap: 0.75rem; }
+        .modal-actions button { flex: 1; padding: 12px; border-radius: var(--radius-sm); font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all var(--transition); font-family: inherit; }
+        .btn-modal-cancel { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); }
+        .btn-modal-confirm { background: linear-gradient(135deg, var(--accent), #8b5cf6); border: none; color: white; }
     </style>
 </head>
 <body>
 
 <div class="bg-glow"></div>
 
-<!-- Payment Success/Cancel Banners -->
+<!-- Payment Banners -->
 <div class="payment-banner success" id="successBanner" style="display:none">
-    <span>&#10003;</span>
-    <span>Payment successful! You now have Pro/Team access. Enjoy unlimited presentations.</span>
+    <span>&#10003;</span><span>Payment successful! You now have Pro/Team access.</span>
     <button class="close-banner" onclick="this.parentElement.style.display='none'">&times;</button>
 </div>
 <div class="payment-banner canceled" id="cancelBanner" style="display:none">
-    <span>&#8505;</span>
-    <span>Payment was canceled. You can try again anytime from the pricing section.</span>
+    <span>&#8505;</span><span>Payment was canceled. You can try again anytime.</span>
     <button class="close-banner" onclick="this.parentElement.style.display='none'">&times;</button>
 </div>
 
-<!-- Email Modal for Checkout -->
+<!-- Email Modal -->
 <div class="modal-overlay" id="emailModal">
     <div class="modal-box">
         <div class="plan-badge" id="modalPlanBadge">PRO PLAN</div>
@@ -766,10 +314,7 @@
 <!-- Navigation -->
 <nav>
     <div class="nav-inner">
-        <a href="#" class="logo">
-            <div class="logo-icon">S</div>
-            SlideAI
-        </a>
+        <a href="#" class="logo"><div class="logo-icon">S</div>SlideAI</a>
         <ul class="nav-links">
             <li><a href="#generator">Generator</a></li>
             <li><a href="#features">Features</a></li>
@@ -780,28 +325,52 @@
 
 <!-- Hero -->
 <section class="hero">
-    <div class="hero-badge">
-        <span class="dot"></span>
-        AI-Powered Presentation Generator
-    </div>
+    <div class="hero-badge"><span class="dot"></span>AI-Powered Presentation Generator</div>
     <h1>Create Stunning Presentations<br>in Seconds, Not Hours</h1>
-    <p>Describe your presentation topic and let AI craft professional, ready-to-present PowerPoint slides with beautiful designs.</p>
+    <p>Describe your topic in any language and let AI craft professional, ready-to-present PowerPoint slides with beautiful designs.</p>
+    <div class="hero-stats">
+        <div class="hero-stat"><div class="num" data-target="2500">0</div><div class="label">Presentations Created</div></div>
+        <div class="hero-stat"><div class="num" data-target="30">0</div><div class="label">Seconds Average</div></div>
+        <div class="hero-stat"><div class="num" data-target="6">0</div><div class="label">Languages Supported</div></div>
+    </div>
 </section>
 
 <!-- Generator App -->
 <div class="container" id="generator">
     <div class="app-card">
         <div class="demo-banner" id="demoBanner" style="display:none">
-            <span>&#9888;</span>
-            <span>Running in demo mode with sample content. Set OPENAI_API_KEY on the server for AI-generated presentations.</span>
+            <span>&#9888;</span><span>Running in demo mode with sample content.</span>
         </div>
-
         <div class="app-grid">
             <!-- Left: Form -->
             <div class="form-section">
                 <div class="form-group">
                     <label>Describe Your Presentation</label>
-                    <textarea id="promptInput" placeholder="e.g., A pitch deck for a fintech startup that provides AI-powered financial planning tools for millennials. Include market size, problem, solution, business model, team, and funding ask of $5M Series A."></textarea>
+                    <textarea id="promptInput" placeholder="e.g., A pitch deck for a fintech startup that provides AI-powered financial planning tools for millennials. Include market size, problem, solution, business model, and funding ask of $5M Series A."></textarea>
+                    <div class="char-count"><span id="charCount">0</span> / 2000</div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+                    <div class="form-group">
+                        <label>Language</label>
+                        <select class="lang-select" id="langSelect">
+                            <option value="English">English</option>
+                            <option value="Chinese">&#20013;&#25991;</option>
+                            <option value="Japanese">&#26085;&#26412;&#35486;</option>
+                            <option value="Spanish">Espa&ntilde;ol</option>
+                            <option value="French">Fran&ccedil;ais</option>
+                            <option value="German">Deutsch</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Slide Count</label>
+                        <div class="count-options">
+                            <button class="count-btn" data-count="5">5</button>
+                            <button class="count-btn selected" data-count="8">8</button>
+                            <button class="count-btn" data-count="10">10</button>
+                            <button class="count-btn" data-count="15">15</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -825,50 +394,81 @@
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label>Slide Count</label>
-                    <div class="count-options">
-                        <button class="count-btn" data-count="5">5</button>
-                        <button class="count-btn selected" data-count="8">8</button>
-                        <button class="count-btn" data-count="10">10</button>
-                        <button class="count-btn" data-count="15">15</button>
+                <!-- Advanced Options -->
+                <button class="advanced-toggle" id="advancedToggle" onclick="toggleAdvanced()">
+                    <span class="arrow">&#9654;</span> Advanced Options
+                </button>
+                <div class="advanced-panel" id="advancedPanel">
+                    <div class="form-group">
+                        <label>Tone</label>
+                        <div class="pill-group" id="toneGroup">
+                            <button class="pill selected" data-value="professional">Professional</button>
+                            <button class="pill" data-value="casual">Casual</button>
+                            <button class="pill" data-value="academic">Academic</button>
+                            <button class="pill" data-value="creative">Creative</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Audience</label>
+                        <div class="pill-group" id="audienceGroup">
+                            <button class="pill selected" data-value="general">General</button>
+                            <button class="pill" data-value="investors">Investors</button>
+                            <button class="pill" data-value="team">Team</button>
+                            <button class="pill" data-value="customers">Customers</button>
+                        </div>
+                    </div>
+                    <div class="toggle-row">
+                        <label style="text-transform:none;font-size:0.85rem;">Include Statistics & Data</label>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="statsToggle" checked>
+                            <span class="toggle-slider"></span>
+                        </label>
                     </div>
                 </div>
 
                 <button class="btn-generate" id="generateBtn">
                     <div class="spinner"></div>
                     <span class="btn-text">Generate Presentation</span>
-                    <span class="btn-loading-text">Generating slides...</span>
+                    <span class="btn-loading-text">Generating...</span>
                 </button>
+
+                <div class="progress-steps" id="progressSteps">
+                    <div class="progress-step" data-step="1"><span class="step-icon">&#9711;</span> Analyzing prompt...</div>
+                    <div class="progress-step" data-step="2"><span class="step-icon">&#9711;</span> Generating content with AI...</div>
+                    <div class="progress-step" data-step="3"><span class="step-icon">&#9711;</span> Building slide layouts...</div>
+                    <div class="progress-step" data-step="4"><span class="step-icon">&#9711;</span> Finalizing presentation...</div>
+                </div>
             </div>
 
             <!-- Right: Preview -->
             <div class="preview-section">
-                <div class="preview-header">
-                    <label>Preview</label>
-                </div>
-
+                <div class="preview-header"><label>Preview</label></div>
                 <div class="preview-placeholder" id="previewPlaceholder">
                     <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="2" y="3" width="20" height="14" rx="2" />
-                        <path d="M8 21h8M12 17v4" />
+                        <rect x="2" y="3" width="20" height="14" rx="2" /><path d="M8 21h8M12 17v4" />
                     </svg>
                     <p>Your presentation preview will appear here<br>after generation</p>
                 </div>
-
                 <div class="preview-content" id="previewContent"></div>
-
                 <div class="result-meta" id="resultMeta"></div>
-
-                <button class="btn-download" id="downloadBtn">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-                    </svg>
-                    Download .pptx
-                </button>
+                <div class="action-buttons" id="actionButtons">
+                    <button class="btn-action primary" id="downloadBtn" title="Download PowerPoint file">&#11015; Download .pptx</button>
+                    <button class="btn-action" id="copyMdBtn" title="Copy as Markdown">&#128196; Markdown</button>
+                    <button class="btn-action" id="copyOutlineBtn" title="Copy outline to clipboard">&#128203; Outline</button>
+                </div>
+                <button class="btn-regenerate" id="regenerateBtn">&#8635; Regenerate with Edits</button>
             </div>
         </div>
     </div>
+</div>
+
+<!-- History -->
+<div class="history-section" id="historySection" style="display:none">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <h3>Recent Presentations <span class="badge" id="historyCount">0</span></h3>
+        <button class="history-clear" onclick="clearHistory()">Clear All</button>
+    </div>
+    <div class="history-list" id="historyList"></div>
 </div>
 
 <!-- Features -->
@@ -876,35 +476,43 @@
     <h2>Why SlideAI?</h2>
     <p class="subtitle">Professional presentations without the hours of design work</p>
     <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon">&#9889;</div>
-            <h3>Instant Generation</h3>
-            <p>Describe what you need and get a complete, ready-to-present PowerPoint file in under 30 seconds. No design skills required.</p>
+        <div class="feature-card"><div class="feature-icon">&#9889;</div><h3>Instant Generation</h3><p>Get a complete PowerPoint in under 30 seconds. No design skills required.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#127760;</div><h3>6 Languages</h3><p>Generate presentations in English, Chinese, Japanese, Spanish, French, or German.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#129302;</div><h3>AI-Powered Content</h3><p>Advanced AI structures your ideas into compelling narratives with data points and speaker notes.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#9998;</div><h3>Edit & Regenerate</h3><p>Edit the outline after generation and regenerate with your changes - no need to start over.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#128200;</div><h3>Smart Structure</h3><p>AI creates logical slide order from introduction through key points to a strong conclusion.</p></div>
+        <div class="feature-card"><div class="feature-icon">&#128196;</div><h3>Multiple Exports</h3><p>Download as .pptx, copy as Markdown, or grab the outline. Works with PowerPoint, Slides & Keynote.</p></div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials">
+    <h2>Loved by Professionals</h2>
+    <p class="subtitle">Join thousands of users creating better presentations</p>
+    <div class="testimonials-grid">
+        <div class="testimonial-card">
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote>"Saved me hours every week. I used to spend half a day on pitch decks - now it takes 5 minutes to get a great starting point."</blockquote>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">JL</div>
+                <div><div class="testimonial-name">James L.</div><div class="testimonial-role">Startup Founder</div></div>
+            </div>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">&#127912;</div>
-            <h3>Professional Templates</h3>
-            <p>Choose from expertly designed themes - corporate blue, modern creative, or clean minimal. Each optimized for readability and impact.</p>
+        <div class="testimonial-card">
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote>"The multi-language support is incredible. I create presentations in both English and Chinese for my international clients."</blockquote>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">SW</div>
+                <div><div class="testimonial-name">Sarah W.</div><div class="testimonial-role">Management Consultant</div></div>
+            </div>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">&#129302;</div>
-            <h3>AI-Powered Content</h3>
-            <p>Advanced language models structure your ideas into compelling narratives with data points, speaker notes, and logical flow.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">&#128196;</div>
-            <h3>Real .pptx Files</h3>
-            <p>Download native PowerPoint files that you can edit, customize, and present in Microsoft PowerPoint, Google Slides, or Keynote.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">&#128200;</div>
-            <h3>Smart Structure</h3>
-            <p>AI automatically creates logical slide order - from introduction through key points to a strong conclusion with call-to-action.</p>
-        </div>
-        <div class="feature-card">
-            <div class="feature-icon">&#128274;</div>
-            <h3>Private & Secure</h3>
-            <p>Your presentations are generated on-demand and automatically deleted after 1 hour. We never store or share your content.</p>
+        <div class="testimonial-card">
+            <div class="testimonial-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <blockquote>"I use this for all my course materials now. The academic tone option produces well-structured educational content every time."</blockquote>
+            <div class="testimonial-author">
+                <div class="testimonial-avatar">MR</div>
+                <div><div class="testimonial-name">Dr. Mike R.</div><div class="testimonial-role">University Professor</div></div>
+            </div>
         </div>
     </div>
 </section>
@@ -915,22 +523,17 @@
     <p class="subtitle">Start free, upgrade when you're ready</p>
     <div class="pricing-grid">
         <div class="pricing-card">
-            <h3>Free</h3>
-            <div class="price">$0<span>/mo</span></div>
-            <div class="price-note">For personal use</div>
+            <h3>Free</h3><div class="price">$0<span>/mo</span></div><div class="price-note">For personal use</div>
             <ul class="pricing-features">
                 <li><span class="check">&#10003;</span> 3 presentations / month</li>
                 <li><span class="check">&#10003;</span> All 3 templates</li>
                 <li><span class="check">&#10003;</span> Up to 10 slides</li>
                 <li><span class="check">&#10003;</span> .pptx download</li>
-                <li><span class="check">&#10003;</span> Basic content generation</li>
             </ul>
             <button class="btn-pricing" onclick="document.getElementById('generator').scrollIntoView({behavior:'smooth'})">Get Started Free</button>
         </div>
         <div class="pricing-card featured">
-            <h3>Pro</h3>
-            <div class="price">$19<span>/mo</span></div>
-            <div class="price-note">For professionals</div>
+            <h3>Pro</h3><div class="price">$19<span>/mo</span></div><div class="price-note">For professionals</div>
             <ul class="pricing-features">
                 <li><span class="check">&#10003;</span> Unlimited presentations</li>
                 <li><span class="check">&#10003;</span> All templates + premium</li>
@@ -942,14 +545,11 @@
             <button class="btn-pricing primary" onclick="openEmailModal('pro')">Start Pro Trial</button>
         </div>
         <div class="pricing-card">
-            <h3>Team</h3>
-            <div class="price">$49<span>/mo</span></div>
-            <div class="price-note">Per team (up to 10 users)</div>
+            <h3>Team</h3><div class="price">$49<span>/mo</span></div><div class="price-note">Per team (up to 10 users)</div>
             <ul class="pricing-features">
                 <li><span class="check">&#10003;</span> Everything in Pro</li>
                 <li><span class="check">&#10003;</span> Team workspace</li>
                 <li><span class="check">&#10003;</span> Brand kit management</li>
-                <li><span class="check">&#10003;</span> Template library</li>
                 <li><span class="check">&#10003;</span> API access</li>
                 <li><span class="check">&#10003;</span> Dedicated support</li>
             </ul>
@@ -958,275 +558,429 @@
     </div>
 </section>
 
-<!-- Footer -->
-<footer>
-    <p>SlideAI &mdash; AI Presentation Generator &bull; Built with FastAPI &amp; python-pptx</p>
-</footer>
+<footer><p>SlideAI &mdash; AI Presentation Generator &bull; Built with FastAPI &amp; python-pptx</p></footer>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-    // ── State ───────────────────────────────────────────
-    let selectedTemplate = 'business';
-    let selectedCount = 8;
-    let currentDownloadUrl = null;
+// ── State ─────────────────────────────────────────
+let selectedTemplate = 'business';
+let selectedCount = 8;
+let selectedTone = 'professional';
+let selectedAudience = 'general';
+let currentFileId = null;
+let currentDownloadUrl = null;
+let currentData = null;
 
-    // ── Template Selection ──────────────────────────────
-    document.querySelectorAll('.template-card').forEach(card => {
-        card.addEventListener('click', () => {
-            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            selectedTemplate = card.dataset.template;
+// ── Animated Counter ──────────────────────────────
+function animateCounters() {
+    document.querySelectorAll('.hero-stat .num').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const suffix = target > 100 ? '+' : '';
+        let current = 0;
+        const step = Math.max(1, Math.floor(target / 40));
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) { current = target; clearInterval(timer); }
+            el.textContent = current.toLocaleString() + suffix;
+        }, 30);
+    });
+}
+const heroObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { animateCounters(); heroObserver.disconnect(); } });
+});
+heroObserver.observe(document.querySelector('.hero-stats'));
+
+// ── Char Count ────────────────────────────────────
+document.getElementById('promptInput').addEventListener('input', (e) => {
+    document.getElementById('charCount').textContent = e.target.value.length;
+});
+
+// ── Template Selection ────────────────────────────
+document.querySelectorAll('.template-card').forEach(card => {
+    card.addEventListener('click', () => {
+        document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        selectedTemplate = card.dataset.template;
+    });
+});
+
+// ── Slide Count Selection ─────────────────────────
+document.querySelectorAll('.count-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        selectedCount = parseInt(btn.dataset.count);
+    });
+});
+
+// ── Pill Selection ────────────────────────────────
+function setupPillGroup(groupId, setter) {
+    document.querySelectorAll(`#${groupId} .pill`).forEach(pill => {
+        pill.addEventListener('click', () => {
+            document.querySelectorAll(`#${groupId} .pill`).forEach(p => p.classList.remove('selected'));
+            pill.classList.add('selected');
+            setter(pill.dataset.value);
         });
     });
+}
+setupPillGroup('toneGroup', v => selectedTone = v);
+setupPillGroup('audienceGroup', v => selectedAudience = v);
 
-    // ── Slide Count Selection ───────────────────────────
-    document.querySelectorAll('.count-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.count-btn').forEach(b => b.classList.remove('selected'));
-            btn.classList.add('selected');
-            selectedCount = parseInt(btn.dataset.count);
-        });
+// ── Advanced Toggle ───────────────────────────────
+function toggleAdvanced() {
+    const toggle = document.getElementById('advancedToggle');
+    const panel = document.getElementById('advancedPanel');
+    toggle.classList.toggle('open');
+    panel.classList.toggle('show');
+}
+
+// ── Toast ─────────────────────────────────────────
+function showToast(msg, type = 'error', duration = 4000) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+// ── Progress Steps ────────────────────────────────
+function showProgress(step) {
+    const container = document.getElementById('progressSteps');
+    container.classList.add('show');
+    container.querySelectorAll('.progress-step').forEach(el => {
+        const s = parseInt(el.dataset.step);
+        el.classList.remove('active', 'done');
+        if (s < step) { el.classList.add('done'); el.querySelector('.step-icon').textContent = '\u2713'; }
+        else if (s === step) { el.classList.add('active'); el.querySelector('.step-icon').textContent = '\u25CF'; }
+        else { el.querySelector('.step-icon').textContent = '\u25CB'; }
     });
+}
+function hideProgress() { document.getElementById('progressSteps').classList.remove('show'); }
 
-    // ── Show Toast ──────────────────────────────────────
-    function showToast(msg, duration = 4000) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), duration);
+// ── Generate ──────────────────────────────────────
+document.getElementById('generateBtn').addEventListener('click', async () => {
+    const prompt = document.getElementById('promptInput').value.trim();
+    if (!prompt || prompt.length < 5) { showToast('Please provide a more detailed description (at least 5 characters).'); return; }
+
+    const btn = document.getElementById('generateBtn');
+    btn.classList.add('loading'); btn.disabled = true;
+
+    document.getElementById('previewContent').classList.remove('show');
+    document.getElementById('previewPlaceholder').classList.remove('hide');
+    document.getElementById('actionButtons').classList.remove('show');
+    document.getElementById('regenerateBtn').classList.remove('show');
+    document.getElementById('resultMeta').classList.remove('show');
+
+    showProgress(1);
+
+    try {
+        setTimeout(() => showProgress(2), 800);
+        setTimeout(() => showProgress(3), 3000);
+
+        const res = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                prompt, template: selectedTemplate, slide_count: selectedCount,
+                language: document.getElementById('langSelect').value,
+                tone: selectedTone, audience: selectedAudience,
+                include_statistics: document.getElementById('statsToggle').checked
+            })
+        });
+
+        showProgress(4);
+
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || `Server error (${res.status})`);
+        }
+
+        const data = await res.json();
+        currentFileId = data.file_id;
+        currentDownloadUrl = data.download_url;
+        currentData = data;
+
+        renderPreview(data, true);
+        saveToHistory(data);
+        showToast('Presentation generated successfully!', 'success');
+
+    } catch (err) {
+        showToast('Generation failed: ' + err.message);
+    } finally {
+        btn.classList.remove('loading'); btn.disabled = false;
+        hideProgress();
     }
+});
 
-    // ── Generate ────────────────────────────────────────
-    document.getElementById('generateBtn').addEventListener('click', async () => {
-        const prompt = document.getElementById('promptInput').value.trim();
-        if (!prompt) {
-            showToast('Please describe the presentation you want to create.');
-            return;
-        }
-        if (prompt.length < 5) {
-            showToast('Please provide a more detailed description (at least 5 characters).');
-            return;
-        }
+// ── Render Preview ────────────────────────────────
+function renderPreview(data, editable = false) {
+    const container = document.getElementById('previewContent');
+    container.innerHTML = '';
 
-        const btn = document.getElementById('generateBtn');
-        btn.classList.add('loading');
-        btn.disabled = true;
+    const titleBar = document.createElement('div');
+    titleBar.className = 'preview-title-bar';
+    titleBar.innerHTML = `<h3>${esc(data.title)}</h3><p>${esc(data.subtitle)}</p>`;
+    container.appendChild(titleBar);
 
-        // Reset preview
-        document.getElementById('previewContent').classList.remove('show');
-        document.getElementById('previewPlaceholder').classList.remove('hide');
-        document.getElementById('downloadBtn').classList.remove('show');
-        document.getElementById('resultMeta').classList.remove('show');
-
-        try {
-            const res = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    prompt: prompt,
-                    template: selectedTemplate,
-                    slide_count: selectedCount
-                })
-            });
-
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.detail || `Server error (${res.status})`);
-            }
-
-            const data = await res.json();
-            currentDownloadUrl = data.download_url;
-
-            // Render preview
-            renderPreview(data);
-
-        } catch (err) {
-            showToast('Generation failed: ' + err.message);
-        } finally {
-            btn.classList.remove('loading');
-            btn.disabled = false;
-        }
-    });
-
-    // ── Render Preview ──────────────────────────────────
-    function renderPreview(data) {
-        const container = document.getElementById('previewContent');
-        container.innerHTML = '';
-
-        // Title bar
-        const titleBar = document.createElement('div');
-        titleBar.className = 'preview-title-bar';
-        titleBar.innerHTML = `<h3>${escapeHtml(data.title)}</h3><p>${escapeHtml(data.subtitle)}</p>`;
-        container.appendChild(titleBar);
-
-        // Slides
-        data.slides_preview.forEach((slide, i) => {
-            const div = document.createElement('div');
-            div.className = 'preview-slide';
-            let bulletsHtml = '';
-            if (slide.bullets && slide.bullets.length) {
-                bulletsHtml = '<ul>' + slide.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('') + '</ul>';
-            }
-            div.innerHTML = `
-                <div class="preview-slide-num">Slide ${i + 1}</div>
-                <h4>${escapeHtml(slide.title)}</h4>
-                ${bulletsHtml}
-            `;
-            container.appendChild(div);
-        });
-
-        // Show preview, hide placeholder
-        container.classList.add('show');
-        document.getElementById('previewPlaceholder').classList.add('hide');
-
-        // Show meta
-        const meta = document.getElementById('resultMeta');
-        meta.innerHTML = `&#10003; Generated ${data.slide_count} slides with "${selectedTemplate}" theme`;
-        meta.classList.add('show');
-
-        // Show download button
-        document.getElementById('downloadBtn').classList.add('show');
-    }
-
-    // ── Download ────────────────────────────────────────
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-        if (currentDownloadUrl) {
-            window.location.href = currentDownloadUrl;
-        }
-    });
-
-    // ── Escape HTML ─────────────────────────────────────
-    function escapeHtml(text) {
+    (data.slides_preview || []).forEach((slide, i) => {
         const div = document.createElement('div');
-        div.textContent = text || '';
-        return div.innerHTML;
+        div.className = 'preview-slide' + (editable ? ' editable' : '');
+        let bulletsHtml = '';
+        if (slide.bullets && slide.bullets.length) {
+            bulletsHtml = '<ul>' + slide.bullets.map(b =>
+                `<li ${editable ? 'contenteditable="true"' : ''}>${esc(b)}</li>`
+            ).join('') + '</ul>';
+        }
+        div.innerHTML = `
+            <div class="preview-slide-num">Slide ${i + 1}</div>
+            <h4 ${editable ? 'contenteditable="true"' : ''}>${esc(slide.title)}</h4>
+            ${bulletsHtml}
+        `;
+        container.appendChild(div);
+    });
+
+    if (editable) {
+        const hint = document.createElement('div');
+        hint.className = 'edit-hint';
+        hint.textContent = 'Click any title or bullet to edit, then click "Regenerate with Edits"';
+        container.appendChild(hint);
     }
 
-    // ── Smooth Scroll ───────────────────────────────────
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    container.classList.add('show');
+    document.getElementById('previewPlaceholder').classList.add('hide');
+
+    const meta = document.getElementById('resultMeta');
+    meta.innerHTML = `&#10003; Generated ${data.slide_count} slides &bull; ${selectedTemplate} theme &bull; ${document.getElementById('langSelect').value}`;
+    meta.classList.add('show');
+
+    document.getElementById('actionButtons').classList.add('show');
+    if (editable) document.getElementById('regenerateBtn').classList.add('show');
+}
+
+// ── Download ──────────────────────────────────────
+document.getElementById('downloadBtn').addEventListener('click', () => {
+    if (currentDownloadUrl) window.location.href = currentDownloadUrl;
+});
+
+// ── Copy Markdown ─────────────────────────────────
+document.getElementById('copyMdBtn').addEventListener('click', async () => {
+    if (!currentFileId) return;
+    try {
+        const res = await fetch(`/api/export/markdown/${currentFileId}`);
+        if (!res.ok) throw new Error('Export failed');
+        const text = await res.text();
+        await navigator.clipboard.writeText(text);
+        showToast('Markdown copied to clipboard!', 'success');
+    } catch (err) {
+        // Fallback: build markdown from preview
+        const md = buildMarkdownFromPreview();
+        await navigator.clipboard.writeText(md);
+        showToast('Outline markdown copied!', 'success');
+    }
+});
+
+// ── Copy Outline ──────────────────────────────────
+document.getElementById('copyOutlineBtn').addEventListener('click', async () => {
+    const md = buildMarkdownFromPreview();
+    await navigator.clipboard.writeText(md);
+    showToast('Outline copied to clipboard!', 'success');
+});
+
+function buildMarkdownFromPreview() {
+    if (!currentData) return '';
+    let md = `# ${currentData.title}\n*${currentData.subtitle}*\n\n`;
+    (currentData.slides_preview || []).forEach((s, i) => {
+        md += `## Slide ${i + 1}: ${s.title}\n`;
+        (s.bullets || []).forEach(b => md += `- ${b}\n`);
+        md += '\n';
+    });
+    return md;
+}
+
+// ── Regenerate with Edits ─────────────────────────
+document.getElementById('regenerateBtn').addEventListener('click', async () => {
+    if (!currentFileId) return;
+
+    const slides = [];
+    document.querySelectorAll('#previewContent .preview-slide').forEach(slideEl => {
+        const title = slideEl.querySelector('h4')?.textContent || '';
+        const bullets = [];
+        slideEl.querySelectorAll('li').forEach(li => bullets.push(li.textContent));
+        slides.push({ title, bullets, speaker_notes: '' });
+    });
+
+    const btn = document.getElementById('regenerateBtn');
+    btn.textContent = 'Regenerating...'; btn.disabled = true;
+
+    try {
+        const res = await fetch('/api/regenerate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ file_id: currentFileId, slides, template: selectedTemplate })
         });
-    });
 
-    // ── Keyboard shortcut ───────────────────────────────
-    document.getElementById('promptInput').addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-            document.getElementById('generateBtn').click();
-        }
-    });
+        if (!res.ok) throw new Error('Regeneration failed');
 
-    // ── Payment Integration ────────────────────────────
-    let selectedPlan = '';
-    let userEmail = localStorage.getItem('slideai_email') || '';
+        const data = await res.json();
+        currentFileId = data.file_id;
+        currentDownloadUrl = data.download_url;
+        currentData = data;
+        renderPreview(data, true);
+        showToast('Regenerated with your edits!', 'success');
 
-    // Check URL params for payment status
-    (function checkPaymentStatus() {
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('success') === 'true') {
-            document.getElementById('successBanner').style.display = 'flex';
-            // Clean URL without reload
-            window.history.replaceState({}, '', window.location.pathname);
-        }
-        if (params.get('canceled') === 'true') {
-            document.getElementById('cancelBanner').style.display = 'flex';
-            window.history.replaceState({}, '', window.location.pathname);
-        }
-    })();
-
-    function openEmailModal(plan) {
-        selectedPlan = plan;
-        const badge = document.getElementById('modalPlanBadge');
-        badge.textContent = plan === 'pro' ? 'PRO PLAN - $19/mo' : 'TEAM PLAN - $49/mo';
-        const emailInput = document.getElementById('modalEmailInput');
-        emailInput.value = userEmail;
-        document.getElementById('emailModal').classList.add('show');
-        setTimeout(() => emailInput.focus(), 100);
+    } catch (err) {
+        showToast('Regeneration failed: ' + err.message);
+    } finally {
+        btn.textContent = '\u21BB Regenerate with Edits'; btn.disabled = false;
     }
+});
 
-    function closeEmailModal() {
-        document.getElementById('emailModal').classList.remove('show');
-        selectedPlan = '';
+// ── History ───────────────────────────────────────
+function getHistory() {
+    try { return JSON.parse(localStorage.getItem('slideai_history') || '[]'); }
+    catch { return []; }
+}
+
+function saveToHistory(data) {
+    const history = getHistory();
+    history.unshift({
+        title: data.title,
+        subtitle: data.subtitle,
+        slide_count: data.slide_count,
+        download_url: data.download_url,
+        file_id: data.file_id,
+        template: selectedTemplate,
+        date: new Date().toISOString()
+    });
+    if (history.length > 10) history.length = 10;
+    localStorage.setItem('slideai_history', JSON.stringify(history));
+    renderHistory();
+}
+
+function renderHistory() {
+    const history = getHistory();
+    const section = document.getElementById('historySection');
+    const list = document.getElementById('historyList');
+    const count = document.getElementById('historyCount');
+
+    if (history.length === 0) { section.style.display = 'none'; return; }
+
+    section.style.display = 'block';
+    count.textContent = history.length;
+    list.innerHTML = '';
+
+    history.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        const date = new Date(item.date);
+        const dateStr = date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        div.innerHTML = `<h4>${esc(item.title)}</h4><div class="meta"><span>${item.slide_count} slides &bull; ${item.template}</span><span>${dateStr}</span></div>`;
+        div.addEventListener('click', () => {
+            if (item.download_url) window.location.href = item.download_url;
+        });
+        list.appendChild(div);
+    });
+}
+
+function clearHistory() {
+    localStorage.removeItem('slideai_history');
+    renderHistory();
+}
+
+// Init history
+renderHistory();
+
+// ── Escape HTML ───────────────────────────────────
+function esc(text) { const d = document.createElement('div'); d.textContent = text || ''; return d.innerHTML; }
+
+// ── Smooth Scroll ─────────────────────────────────
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+// ── Keyboard Shortcut ─────────────────────────────
+document.getElementById('promptInput').addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') document.getElementById('generateBtn').click();
+});
+
+// ── Payment Integration ───────────────────────────
+let selectedPlan = '';
+let userEmail = localStorage.getItem('slideai_email') || '';
+
+(function checkPaymentStatus() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === 'true') {
+        document.getElementById('successBanner').style.display = 'flex';
+        window.history.replaceState({}, '', window.location.pathname);
     }
-
-    // Close modal on overlay click
-    document.getElementById('emailModal').addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) closeEmailModal();
-    });
-
-    // Close modal on Escape
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') closeEmailModal();
-    });
-
-    // Enter key in email input triggers confirm
-    document.getElementById('modalEmailInput').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') confirmCheckout();
-    });
-
-    async function confirmCheckout() {
-        const email = document.getElementById('modalEmailInput').value.trim();
-        if (!email || !email.includes('@')) {
-            showToast('Please enter a valid email address.');
-            return;
-        }
-
-        // Save email for future use
-        userEmail = email;
-        localStorage.setItem('slideai_email', email);
-
-        const confirmBtn = document.getElementById('modalConfirmBtn');
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = 'Processing...';
-
-        try {
-            const res = await fetch('/api/checkout', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    plan: selectedPlan,
-                    email: email,
-                    success_url: window.location.origin + '/?success=true',
-                    cancel_url: window.location.origin + '/?canceled=true'
-                })
-            });
-
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.detail || 'Checkout failed');
-            }
-
-            const data = await res.json();
-            closeEmailModal();
-
-            // Redirect to Stripe Checkout (or demo success page)
-            window.location.href = data.checkout_url;
-
-        } catch (err) {
-            showToast('Checkout error: ' + err.message);
-        } finally {
-            confirmBtn.disabled = false;
-            confirmBtn.textContent = 'Continue to Payment';
-        }
+    if (params.get('canceled') === 'true') {
+        document.getElementById('cancelBanner').style.display = 'flex';
+        window.history.replaceState({}, '', window.location.pathname);
     }
+})();
 
-    // ── Send email header with generate requests ───────
-    const originalFetch = window.fetch;
-    window.fetch = function(url, options = {}) {
-        if (typeof url === 'string' && url.includes('/api/generate') && userEmail) {
-            options.headers = options.headers || {};
-            if (options.headers instanceof Headers) {
-                options.headers.set('X-User-Email', userEmail);
-            } else {
-                options.headers['X-User-Email'] = userEmail;
-            }
-        }
-        return originalFetch.call(this, url, options);
-    };
+function openEmailModal(plan) {
+    selectedPlan = plan;
+    document.getElementById('modalPlanBadge').textContent = plan === 'pro' ? 'PRO PLAN - $19/mo' : 'TEAM PLAN - $49/mo';
+    document.getElementById('modalEmailInput').value = userEmail;
+    document.getElementById('emailModal').classList.add('show');
+    setTimeout(() => document.getElementById('modalEmailInput').focus(), 100);
+}
+
+function closeEmailModal() {
+    document.getElementById('emailModal').classList.remove('show');
+    selectedPlan = '';
+}
+
+document.getElementById('emailModal').addEventListener('click', (e) => { if (e.target === e.currentTarget) closeEmailModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeEmailModal(); });
+document.getElementById('modalEmailInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') confirmCheckout(); });
+
+async function confirmCheckout() {
+    const email = document.getElementById('modalEmailInput').value.trim();
+    if (!email || !email.includes('@')) { showToast('Please enter a valid email address.'); return; }
+
+    userEmail = email;
+    localStorage.setItem('slideai_email', email);
+
+    const confirmBtn = document.getElementById('modalConfirmBtn');
+    confirmBtn.disabled = true; confirmBtn.textContent = 'Processing...';
+
+    try {
+        const res = await fetch('/api/checkout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                plan: selectedPlan, email,
+                success_url: window.location.origin + '/?success=true',
+                cancel_url: window.location.origin + '/?canceled=true'
+            })
+        });
+        if (!res.ok) throw new Error((await res.json().catch(() => ({}))).detail || 'Checkout failed');
+        const data = await res.json();
+        closeEmailModal();
+        window.location.href = data.checkout_url;
+    } catch (err) {
+        showToast('Checkout error: ' + err.message);
+    } finally {
+        confirmBtn.disabled = false; confirmBtn.textContent = 'Continue to Payment';
+    }
+}
+
+// ── Send email header with generate requests ──────
+const originalFetch = window.fetch;
+window.fetch = function(url, options = {}) {
+    if (typeof url === 'string' && url.includes('/api/generate') && userEmail) {
+        options.headers = options.headers || {};
+        if (options.headers instanceof Headers) options.headers.set('X-User-Email', userEmail);
+        else options.headers['X-User-Email'] = userEmail;
+    }
+    return originalFetch.call(this, url, options);
+};
 </script>
 
 </body>
