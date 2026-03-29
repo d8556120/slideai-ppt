@@ -178,6 +178,11 @@ async def list_templates():
     return {"templates": get_available_templates()}
 
 
+@app.get("/api/health")
+async def health_check():
+    return {"status": "ok", "version": "2.0.0"}
+
+
 # ── Serve Frontend ─────────────────────────────────────────────────────────────
 
 @app.get("/")

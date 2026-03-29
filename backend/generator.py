@@ -8,6 +8,8 @@ from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
+from pptx.oxml.ns import qn
+from lxml import etree
 import os
 import uuid
 
@@ -75,13 +77,11 @@ def _add_shape_bg(slide, left, top, width, height, color: RGBColor, alpha=None):
     shape.fill.fore_color.rgb = color
     shape.line.fill.background()  # No border
     if alpha is not None:
-        from pptx.oxml.ns import qn
         solid_fill = shape.fill._fill
         a_elem = solid_fill.find(qn('a:solidFill'))
         if a_elem is not None:
             srgb = a_elem.find(qn('a:srgbClr'))
             if srgb is not None:
-                from lxml import etree
                 alpha_elem = etree.SubElement(srgb, qn('a:alpha'))
                 alpha_elem.set('val', str(int(alpha * 1000)))
     return shape
@@ -103,12 +103,89 @@ def _add_text_box(slide, left, top, width, height, text, font_size, color,
     return txBox
 
 
-def _create_title_slide(prs, content: dict, theme: dict):
+def _add_page_number(slide, slide_num: int, total: int, theme: dict):
+    """Add page number in the bottom right corner."""
+    _add_text_box(slide, Inches(11.5), Inches(7.0), Inches(1.5), Inches(0.4),
+                  f"{slide_num} / {total}", 10, theme["slide_num_color"],
+                  alignment=PP_ALIGN.RIGHT, font_name="Segoe UI Light")
+
+
+def _add_left_accent_bar(slide, theme: dict):
+    """Add a thin accent bar on the left side of content slides."""
+    _add_shape_bg(slide, Inches(0), Inches(0), Inches(0.06), SLIDE_HEIGHT, theme["accent"])
+
+
+def _add_business_header(slide, theme: dict):
+    """Add a subtle header bar for business template."""
+    # Header background bar
+    _add_shape_bg(slide, Inches(0), Inches(0), SLIDE_WIDTH, Inches(0.5), theme["bg_secondary"])
+    # Thin accent line under header
+    _add_shape_bg(slide, Inches(0), Inches(0.5), SLIDE_WIDTH, Inches(0.03), theme["accent"])
+    # Branding text
+    _add_text_box(slide, Inches(0.5), Inches(0.05), Inches(3), Inches(0.4),
+                  "SlideAI", 9, theme["slide_num_color"],
+                  bold=True, font_name="Segoe UI Semibold")
+
+
+def _add_creative_decorations(slide, theme: dict):
+    """Add gradient-like colored shapes as background decoration for creative template."""
+    # Large circle top-right (semi-transparent)
+    circle1 = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(10), Inches(-2), Inches(5), Inches(5))
+    circle1.fill.solid()
+    circle1.fill.fore_color.rgb = theme["accent"]
+    circle1.line.fill.background()
+    try:
+        sf = circle1.fill._fill
+        a_elem = sf.find(qn('a:solidFill'))
+        if a_elem is not None:
+            srgb = a_elem.find(qn('a:srgbClr'))
+            if srgb is not None:
+                alpha_elem = etree.SubElement(srgb, qn('a:alpha'))
+                alpha_elem.set('val', '8000')
+    except Exception:
+        pass
+
+    # Small circle bottom-left (semi-transparent)
+    circle2 = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(-1.5), Inches(5.5), Inches(3.5), Inches(3.5))
+    circle2.fill.solid()
+    circle2.fill.fore_color.rgb = theme["accent2"]
+    circle2.line.fill.background()
+    try:
+        sf = circle2.fill._fill
+        a_elem = sf.find(qn('a:solidFill'))
+        if a_elem is not None:
+            srgb = a_elem.find(qn('a:srgbClr'))
+            if srgb is not None:
+                alpha_elem = etree.SubElement(srgb, qn('a:alpha'))
+                alpha_elem.set('val', '6000')
+    except Exception:
+        pass
+
+
+def _add_minimal_dividers(slide, theme: dict):
+    """Add elegant thin lines as dividers for minimal template."""
+    # Top thin line
+    _add_shape_bg(slide, Inches(0.8), Inches(0.4), Inches(11.7), Inches(0.01), theme["divider_color"], alpha=30)
+    # Bottom thin line
+    _add_shape_bg(slide, Inches(0.8), Inches(7.0), Inches(11.7), Inches(0.01), theme["divider_color"], alpha=30)
+
+
+def _apply_template_decorations(slide, template: str, theme: dict):
+    """Apply template-specific decorations to a content slide."""
+    if template == "business":
+        _add_business_header(slide, theme)
+    elif template == "creative":
+        _add_creative_decorations(slide, theme)
+    elif template == "minimal":
+        _add_minimal_dividers(slide, theme)
+
+
+def _create_title_slide(prs, content: dict, theme: dict, template: str = "business"):
     """Create the opening title slide."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])  # Blank layout
     _set_slide_bg(slide, theme["bg_primary"])
 
-    # Accent bar on left
+    # Left accent bar
     _add_shape_bg(slide, Inches(0), Inches(0), Inches(0.08), SLIDE_HEIGHT, theme["accent"])
 
     # Decorative accent circle (top-right)
@@ -116,10 +193,7 @@ def _create_title_slide(prs, content: dict, theme: dict):
     circle.fill.solid()
     circle.fill.fore_color.rgb = theme["accent"]
     circle.line.fill.background()
-    # Make semi-transparent via xml
     try:
-        from pptx.oxml.ns import qn
-        from lxml import etree
         sf = circle.fill._fill
         a_elem = sf.find(qn('a:solidFill'))
         if a_elem is not None:
@@ -130,49 +204,83 @@ def _create_title_slide(prs, content: dict, theme: dict):
     except Exception:
         pass
 
-    # Title
-    _add_text_box(slide, Inches(1), Inches(2.2), Inches(10), Inches(1.8),
-                  content.get("title", "Presentation"), 44, theme["title_color"],
-                  bold=True, font_name="Segoe UI Semibold")
+    # Creative template: extra decoration
+    if template == "creative":
+        circle2 = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(-2), Inches(5), Inches(5), Inches(5))
+        circle2.fill.solid()
+        circle2.fill.fore_color.rgb = theme["accent2"]
+        circle2.line.fill.background()
+        try:
+            sf = circle2.fill._fill
+            a_elem = sf.find(qn('a:solidFill'))
+            if a_elem is not None:
+                srgb = a_elem.find(qn('a:srgbClr'))
+                if srgb is not None:
+                    alpha_elem = etree.SubElement(srgb, qn('a:alpha'))
+                    alpha_elem.set('val', '10000')
+        except Exception:
+            pass
 
-    # Divider line
-    _add_shape_bg(slide, Inches(1), Inches(4.1), Inches(2), Inches(0.06), theme["accent"])
+    # Title - large centered text
+    title_text = content.get("title", "Presentation")
+    _add_text_box(slide, Inches(1), Inches(1.8), Inches(11), Inches(2.2),
+                  title_text, 44, theme["title_color"],
+                  bold=True, alignment=PP_ALIGN.CENTER, font_name="Segoe UI Semibold")
 
-    # Subtitle
-    _add_text_box(slide, Inches(1), Inches(4.4), Inches(9), Inches(0.8),
-                  content.get("subtitle", ""), 20, theme["subtitle_color"],
-                  font_name="Segoe UI Light")
+    # Decorative line under title
+    line_width = min(Inches(4), Inches(len(title_text) * 0.08))
+    line_left = Inches(6.666) - line_width / 2  # Center the line
+    _add_shape_bg(slide, line_left, Inches(4.1), line_width, Inches(0.06), theme["accent"])
 
-    # Author
-    _add_text_box(slide, Inches(1), Inches(5.5), Inches(6), Inches(0.5),
+    # Subtitle - centered below line
+    _add_text_box(slide, Inches(1.5), Inches(4.5), Inches(10.3), Inches(0.9),
+                  content.get("subtitle", ""), 22, theme["subtitle_color"],
+                  alignment=PP_ALIGN.CENTER, font_name="Segoe UI Light")
+
+    # Author - centered at bottom
+    _add_text_box(slide, Inches(1.5), Inches(5.8), Inches(10.3), Inches(0.5),
                   content.get("author", ""), 14, theme["slide_num_color"],
-                  font_name="Segoe UI")
+                  alignment=PP_ALIGN.CENTER, font_name="Segoe UI")
+
+    # Minimal template: add elegant horizontal rules
+    if template == "minimal":
+        _add_shape_bg(slide, Inches(2), Inches(1.5), Inches(9.3), Inches(0.01), theme["divider_color"], alpha=20)
+        _add_shape_bg(slide, Inches(2), Inches(6.5), Inches(9.3), Inches(0.01), theme["divider_color"], alpha=20)
 
 
-def _create_content_slide(prs, slide_data: dict, slide_num: int, total: int, theme: dict):
+def _create_content_slide(prs, slide_data: dict, slide_num: int, total: int,
+                          theme: dict, template: str = "business"):
     """Create a content slide with title and bullet points."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _set_slide_bg(slide, theme["bg_primary"])
 
+    # Apply template-specific decorations (drawn first so content is on top)
+    _apply_template_decorations(slide, template, theme)
+
+    # Left accent bar for all templates
+    _add_left_accent_bar(slide, theme)
+
     # Top accent bar
     _add_shape_bg(slide, Inches(0), Inches(0), SLIDE_WIDTH, Inches(0.05), theme["accent"])
 
-    # Slide number badge
-    _add_text_box(slide, Inches(11.8), Inches(0.3), Inches(1.2), Inches(0.4),
-                  f"{slide_num:02d} / {total:02d}", 10, theme["slide_num_color"],
-                  alignment=PP_ALIGN.RIGHT, font_name="Segoe UI Light")
+    # Content offset depends on template
+    content_top_offset = 0.0
+    if template == "business":
+        content_top_offset = 0.55  # Account for header bar
 
     # Slide title
-    _add_text_box(slide, Inches(0.8), Inches(0.6), Inches(11), Inches(1),
-                  slide_data.get("title", ""), 32, theme["title_color"],
+    _add_text_box(slide, Inches(0.8), Inches(0.6 + content_top_offset), Inches(11), Inches(1),
+                  slide_data.get("title", ""), 36, theme["title_color"],
                   bold=True, font_name="Segoe UI Semibold")
 
     # Divider under title
-    _add_shape_bg(slide, Inches(0.8), Inches(1.55), Inches(1.5), Inches(0.04), theme["accent"])
+    _add_shape_bg(slide, Inches(0.8), Inches(1.55 + content_top_offset),
+                  Inches(1.5), Inches(0.04), theme["accent"])
 
     # Bullet points
     bullets = slide_data.get("bullets", [])
-    txBox = slide.shapes.add_textbox(Inches(0.8), Inches(2.0), Inches(11), Inches(4.8))
+    bullet_top = 2.0 + content_top_offset
+    txBox = slide.shapes.add_textbox(Inches(0.8), Inches(bullet_top), Inches(11), Inches(4.5))
     tf = txBox.text_frame
     tf.word_wrap = True
 
@@ -182,47 +290,75 @@ def _create_content_slide(prs, slide_data: dict, slide_num: int, total: int, the
         else:
             p = tf.add_paragraph()
 
-        p.space_before = Pt(12)
-        p.space_after = Pt(8)
-        p.level = 0
+        p.space_before = Pt(14)
+        p.space_after = Pt(10)
 
-        # Bullet marker
-        run_marker = p.add_run()
-        run_marker.text = "\u25CF  "  # Filled circle
-        run_marker.font.size = Pt(10)
-        run_marker.font.color.rgb = theme["bullet_color"]
-        run_marker.font.name = "Segoe UI"
+        # Check if this is a sub-point (starts with "- " or "  ")
+        is_sub = bullet.startswith("- ") or bullet.startswith("  ")
+        if is_sub:
+            bullet = bullet.lstrip("- ")
+            p.level = 1
 
-        # Bullet text
-        run_text = p.add_run()
-        run_text.text = bullet
-        run_text.font.size = Pt(18)
-        run_text.font.color.rgb = theme["text_color"]
-        run_text.font.name = "Segoe UI"
+            # Sub-point marker
+            run_marker = p.add_run()
+            run_marker.text = "    \u25E6  "  # Open circle for sub-points with indentation
+            run_marker.font.size = Pt(10)
+            run_marker.font.color.rgb = theme["bullet_color"]
+            run_marker.font.name = "Segoe UI"
+
+            # Sub-point text (slightly smaller)
+            run_text = p.add_run()
+            run_text.text = bullet
+            run_text.font.size = Pt(16)
+            run_text.font.color.rgb = theme["text_color"]
+            run_text.font.name = "Segoe UI"
+        else:
+            p.level = 0
+
+            # Bullet marker
+            run_marker = p.add_run()
+            run_marker.text = "\u25CF  "  # Filled circle
+            run_marker.font.size = Pt(10)
+            run_marker.font.color.rgb = theme["bullet_color"]
+            run_marker.font.name = "Segoe UI"
+
+            # Bullet text
+            run_text = p.add_run()
+            run_text.text = bullet
+            run_text.font.size = Pt(18)
+            run_text.font.color.rgb = theme["text_color"]
+            run_text.font.name = "Segoe UI"
 
     # Speaker notes
     notes = slide_data.get("speaker_notes", "")
     if notes:
         notes_slide = slide.notes_slide
-        notes_slide.notes_text_frame.text = notes
+        notes_tf = notes_slide.notes_text_frame
+        notes_tf.text = notes
+        for paragraph in notes_tf.paragraphs:
+            for run in paragraph.runs:
+                run.font.size = Pt(12)
+
+    # Page number (bottom right)
+    total_with_title_closing = total + 2
+    _add_page_number(slide, slide_num + 1, total_with_title_closing, theme)
 
     # Bottom decorative bar
     _add_shape_bg(slide, Inches(0), Inches(7.3), SLIDE_WIDTH, Inches(0.2), theme["bg_secondary"])
 
 
-def _create_closing_slide(prs, closing: dict, theme: dict):
+def _create_closing_slide(prs, closing: dict, theme: dict, template: str = "business",
+                          total_slides: int = 0):
     """Create the closing/thank-you slide."""
     slide = prs.slides.add_slide(prs.slide_layouts[6])
     _set_slide_bg(slide, theme["bg_primary"])
 
     # Large accent circle center
-    circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.5), Inches(0.8), Inches(4.3), Inches(4.3))
+    circle = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(4.5), Inches(0.5), Inches(4.3), Inches(4.3))
     circle.fill.solid()
     circle.fill.fore_color.rgb = theme["accent"]
     circle.line.fill.background()
     try:
-        from pptx.oxml.ns import qn
-        from lxml import etree
         sf = circle.fill._fill
         a_elem = sf.find(qn('a:solidFill'))
         if a_elem is not None:
@@ -233,28 +369,53 @@ def _create_closing_slide(prs, closing: dict, theme: dict):
     except Exception:
         pass
 
-    # Closing title
-    _add_text_box(slide, Inches(1), Inches(2.3), Inches(11.3), Inches(1.5),
+    # Creative template: extra decorations
+    if template == "creative":
+        _add_creative_decorations(slide, theme)
+
+    # Minimal template: elegant dividers
+    if template == "minimal":
+        _add_shape_bg(slide, Inches(3), Inches(1.5), Inches(7.3), Inches(0.01), theme["divider_color"], alpha=20)
+        _add_shape_bg(slide, Inches(3), Inches(6.0), Inches(7.3), Inches(0.01), theme["divider_color"], alpha=20)
+
+    # Closing title - large and centered
+    _add_text_box(slide, Inches(1), Inches(2.0), Inches(11.3), Inches(1.5),
                   closing.get("title", "Thank You"), 48, theme["title_color"],
                   bold=True, alignment=PP_ALIGN.CENTER, font_name="Segoe UI Semibold")
 
-    # Divider
-    _add_shape_bg(slide, Inches(5.5), Inches(3.9), Inches(2.3), Inches(0.04), theme["accent"])
+    # Decorative divider line
+    _add_shape_bg(slide, Inches(5.2), Inches(3.6), Inches(2.9), Inches(0.05), theme["accent"])
 
     # Closing bullets
     bullets = closing.get("bullets", [])
-    y_start = 4.3
+    y_start = 4.1
     for bullet in bullets:
         _add_text_box(slide, Inches(1), Inches(y_start), Inches(11.3), Inches(0.5),
-                      bullet, 16, theme["subtitle_color"],
+                      bullet, 18, theme["subtitle_color"],
                       alignment=PP_ALIGN.CENTER, font_name="Segoe UI Light")
-        y_start += 0.45
+        y_start += 0.5
+
+    # "Generated with SlideAI" branding
+    _add_text_box(slide, Inches(4), Inches(6.8), Inches(5.3), Inches(0.4),
+                  "Generated with SlideAI", 9, theme["slide_num_color"],
+                  alignment=PP_ALIGN.CENTER, font_name="Segoe UI Light")
 
     # Speaker notes
     notes = closing.get("speaker_notes", "")
     if notes:
         notes_slide = slide.notes_slide
-        notes_slide.notes_text_frame.text = notes
+        notes_tf = notes_slide.notes_text_frame
+        notes_tf.text = notes
+        for paragraph in notes_tf.paragraphs:
+            for run in paragraph.runs:
+                run.font.size = Pt(12)
+
+    # Page number
+    if total_slides > 0:
+        _add_page_number(slide, total_slides, total_slides, theme)
+
+    # Bottom accent bar
+    _add_shape_bg(slide, Inches(0), Inches(7.3), SLIDE_WIDTH, Inches(0.2), theme["bg_secondary"])
 
 
 def generate_pptx(content: dict, template: str = "business") -> str:
@@ -266,7 +427,7 @@ def generate_pptx(content: dict, template: str = "business") -> str:
         template: Theme name ('business', 'creative', 'minimal')
 
     Returns:
-        Path to the generated .pptx file
+        Tuple of (file_id, filepath)
     """
     theme = THEMES.get(template, THEMES["business"])
 
@@ -275,17 +436,17 @@ def generate_pptx(content: dict, template: str = "business") -> str:
     prs.slide_height = SLIDE_HEIGHT
 
     # Create title slide
-    _create_title_slide(prs, content, theme)
+    _create_title_slide(prs, content, theme, template)
 
     # Create content slides
     slides = content.get("slides", [])
     total_slides = len(slides)
     for i, slide_data in enumerate(slides):
-        _create_content_slide(prs, slide_data, i + 1, total_slides, theme)
+        _create_content_slide(prs, slide_data, i + 1, total_slides, theme, template)
 
     # Create closing slide
     closing = content.get("closing", {"title": "Thank You", "bullets": [], "speaker_notes": ""})
-    _create_closing_slide(prs, closing, theme)
+    _create_closing_slide(prs, closing, theme, template, total_slides=total_slides + 2)
 
     # Save file
     output_dir = os.path.join(os.path.dirname(__file__), "generated")
