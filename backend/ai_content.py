@@ -482,8 +482,7 @@ def _build_system_prompt(language: str = "English", tone: str = "professional",
 CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL content in {language}.
 Every single title, bullet point, speaker note, subtitle MUST be in {language}.
 Do NOT use English anywhere in the content. This is the most important rule.
-If the topic is given in English, translate it and write everything in {language}.
-IMPORTANT: For non-ASCII characters, you MUST use JSON Unicode escape sequences (e.g. \\u4f60\\u597d for Chinese characters). This is required for proper JSON encoding."""
+If the topic is given in English, translate it and write everything in {language}."""
 
     return f"""You are SlideAI, an expert presentation content generator. Given a topic or description, generate structured PowerPoint content in JSON format.
 
@@ -541,24 +540,20 @@ async def generate_content(prompt: str, slide_count: int = 8,
     Returns:
         dict with structured presentation content
     """
-    # Select API based on language: DeepSeek for non-English, Groq for English
+    # All through Groq (free & fast): Llama for English, Qwen3 for non-English
     GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
     GROQ_URL = "https://api.groq.com/openai/v1"
-    GROQ_MODEL = "llama-3.3-70b-versatile"
-
-    DEEPSEEK_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
-    DEEPSEEK_URL = "https://api.deepseek.com/v1"
-    DEEPSEEK_MODEL = "deepseek-chat"
+    GROQ_MODEL_EN = "llama-3.3-70b-versatile"
+    GROQ_MODEL_INTL = "qwen/qwen3-32b"  # Excellent Chinese/multilingual support
 
     # Fallback to generic OPENAI_* env vars
     fallback_key = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("ANTHROPIC_AUTH_TOKEN", "")
     fallback_url = os.environ.get("OPENAI_BASE_URL", "") or "https://api.openai.com/v1"
     fallback_model = os.environ.get("OPENAI_MODEL", "gpt-4o")
 
-    if language != "English" and DEEPSEEK_KEY:
-        api_key, base_url, model = DEEPSEEK_KEY, DEEPSEEK_URL, DEEPSEEK_MODEL
-    elif GROQ_KEY:
-        api_key, base_url, model = GROQ_KEY, GROQ_URL, GROQ_MODEL
+    if GROQ_KEY:
+        api_key, base_url = GROQ_KEY, GROQ_URL
+        model = GROQ_MODEL_EN if language == "English" else GROQ_MODEL_INTL
     else:
         api_key, base_url, model = fallback_key, fallback_url, fallback_model
 
@@ -570,9 +565,10 @@ async def generate_content(prompt: str, slide_count: int = 8,
 
     language_reminder = ""
     if language != "English":
-        language_reminder = f"\n\nREMINDER: Write EVERYTHING in {language}. Use JSON Unicode escape sequences (\\uXXXX) for all non-ASCII characters. Do NOT use English."
+        language_reminder = f"\n\nREMINDER: Write EVERYTHING in {language}. Do NOT use English."
 
-    user_message = f"""Create a {tone} presentation with exactly {slide_count - 2} content slides (plus title and closing slides) about the following topic:
+    user_message = f"""/no_think
+Create a {tone} presentation with exactly {slide_count - 2} content slides (plus title and closing slides) about the following topic:
 
 {prompt}
 
@@ -599,6 +595,10 @@ Remember to return ONLY valid JSON matching the required structure.{language_rem
             )
 
             content = response.choices[0].message.content.strip()
+
+            # Remove <think>...</think> tags (Qwen3 reasoning)
+            import re
+            content = re.sub(r'<think>.*?</think>', '', content, flags=re.DOTALL).strip()
 
             # Try to extract JSON from markdown code blocks if present
             if content.startswith("```"):
