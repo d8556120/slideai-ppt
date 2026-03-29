@@ -5,6 +5,7 @@ Main application with API endpoints for generating, downloading, and managing pr
 
 import os
 import time
+import json
 import asyncio
 from pathlib import Path
 from contextlib import asynccontextmanager
@@ -20,10 +21,10 @@ if env_path.exists():
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, List
 
 from generator import generate_pptx, get_available_templates
 from ai_content import generate_content
@@ -32,10 +33,15 @@ from payments import router as payments_router, check_generation_allowed, record
 
 # ── Configuration ──────────────────────────────────────────────────────────────
 
+APP_VERSION = "2.0.0"
 GENERATED_DIR = Path(__file__).parent / "generated"
 FRONTEND_DIR = Path(__file__).parent.parent / "frontend"
 CLEANUP_INTERVAL = 600    # Check every 10 minutes
 FILE_MAX_AGE = 3600       # 1 hour
+
+# In-memory store for generated content (for regeneration and export)
+# Maps file_id -> { "content": dict, "template": str }
+content_store: dict = {}
 
 
 # ── Cleanup background task ───────────────────────────────────────────────────
@@ -50,6 +56,9 @@ async def cleanup_old_files():
                 for f in GENERATED_DIR.iterdir():
                     if f.suffix == ".pptx" and (now - f.stat().st_mtime) > FILE_MAX_AGE:
                         f.unlink()
+                        # Clean up content store
+                        fid = f.stem
+                        content_store.pop(fid, None)
                         print(f"Cleaned up: {f.name}")
         except Exception as e:
             print(f"Cleanup error: {e}")
@@ -67,9 +76,9 @@ async def lifespan(app: FastAPI):
 # ── FastAPI App ────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="AI PPT Generator",
+    title="SlideAI - AI PPT Generator",
     description="Generate professional PowerPoint presentations with AI",
-    version="1.0.0",
+    version=APP_VERSION,
     lifespan=lifespan
 )
 
@@ -92,6 +101,25 @@ class GenerateRequest(BaseModel):
     prompt: str = Field(..., min_length=5, max_length=2000, description="Describe the presentation you want")
     template: str = Field(default="business", description="Template theme: business, creative, or minimal")
     slide_count: int = Field(default=8, ge=5, le=15, description="Number of slides (5-15)")
+    language: str = Field(default="English", description="Language for the content")
+    tone: str = Field(default="professional", description="Tone: professional, casual, academic, or creative")
+    audience: str = Field(default="general", description="Target audience: investors, team, customers, or general")
+    include_statistics: bool = Field(default=True, description="Whether to include statistics and data points")
+
+
+class SlideData(BaseModel):
+    title: str
+    bullets: List[str]
+    speaker_notes: Optional[str] = ""
+
+
+class RegenerateRequest(BaseModel):
+    file_id: str = Field(..., description="Original file ID to base regeneration on")
+    template: Optional[str] = Field(default=None, description="Template theme (optional, keeps original if not set)")
+    slides: List[SlideData] = Field(..., description="Modified slide content")
+    title: Optional[str] = None
+    subtitle: Optional[str] = None
+    closing: Optional[SlideData] = None
 
 
 class GenerateResponse(BaseModel):
@@ -103,7 +131,30 @@ class GenerateResponse(BaseModel):
     slides_preview: list
 
 
+class HealthResponse(BaseModel):
+    status: str
+    version: str
+    ai_mode: str
+    payments_mode: str
+
+
 # ── API Endpoints ──────────────────────────────────────────────────────────────
+
+@app.get("/api/health")
+async def health_check():
+    """Health check endpoint returning status and configuration info."""
+    groq = "set" if os.environ.get("GROQ_API_KEY", "") else "missing"
+    deepseek = "set" if os.environ.get("DEEPSEEK_API_KEY", "") else "missing"
+    openai = "set" if os.environ.get("OPENAI_API_KEY", "") else "missing"
+    return {
+        "status": "healthy",
+        "version": APP_VERSION,
+        "groq_key": groq,
+        "deepseek_key": deepseek,
+        "openai_key": openai,
+        "payments_mode": "demo" if DEMO_MODE else "live"
+    }
+
 
 @app.post("/api/generate", response_model=GenerateResponse)
 async def generate_presentation(req: GenerateRequest, request: Request):
@@ -121,10 +172,23 @@ async def generate_presentation(req: GenerateRequest, request: Request):
                 )
 
         # Generate content with AI (or demo mode)
-        content = await generate_content(req.prompt, req.slide_count)
+        content = await generate_content(
+            req.prompt,
+            req.slide_count,
+            language=req.language,
+            tone=req.tone,
+            audience=req.audience,
+            include_statistics=req.include_statistics
+        )
 
         # Generate the .pptx file
         file_id, filepath = generate_pptx(content, req.template)
+
+        # Store content for regeneration and export
+        content_store[file_id] = {
+            "content": content,
+            "template": req.template
+        }
 
         # Record usage for rate limiting
         if user_email:
@@ -153,6 +217,123 @@ async def generate_presentation(req: GenerateRequest, request: Request):
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
+@app.post("/api/regenerate", response_model=GenerateResponse)
+async def regenerate_presentation(req: RegenerateRequest):
+    """Regenerate a .pptx from modified slide content without calling AI again."""
+    try:
+        # Get original content if available, otherwise build from scratch
+        original = content_store.get(req.file_id, {})
+        original_content = original.get("content", {})
+        template = req.template or original.get("template", "business")
+
+        # Build new content from the edited slides
+        new_content = {
+            "title": req.title or original_content.get("title", "Presentation"),
+            "subtitle": req.subtitle or original_content.get("subtitle", ""),
+            "author": original_content.get("author", "SlideAI Generator"),
+            "slides": [s.dict() for s in req.slides],
+            "closing": req.closing.dict() if req.closing else original_content.get("closing", {
+                "title": "Thank You",
+                "bullets": ["Questions & Discussion"],
+                "speaker_notes": ""
+            })
+        }
+
+        # Generate the new .pptx file
+        file_id, filepath = generate_pptx(new_content, template)
+
+        # Store updated content
+        content_store[file_id] = {
+            "content": new_content,
+            "template": template
+        }
+
+        # Build slides preview
+        slides_preview = []
+        for s in new_content.get("slides", []):
+            slides_preview.append({
+                "title": s.get("title", ""),
+                "bullets": s.get("bullets", []),
+            })
+
+        return GenerateResponse(
+            file_id=file_id,
+            download_url=f"/api/download/{file_id}",
+            title=new_content.get("title", "Presentation"),
+            subtitle=new_content.get("subtitle", ""),
+            slide_count=len(new_content.get("slides", [])) + 2,
+            slides_preview=slides_preview
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Regeneration failed: {str(e)}")
+
+
+@app.get("/api/export/markdown/{file_id}")
+async def export_markdown(file_id: str):
+    """Export presentation content as formatted Markdown."""
+    # Sanitize
+    if "/" in file_id or "\\" in file_id or ".." in file_id:
+        raise HTTPException(status_code=400, detail="Invalid file ID")
+
+    stored = content_store.get(file_id)
+    if not stored:
+        raise HTTPException(
+            status_code=404,
+            detail="Content not found. The presentation may have expired or the server restarted."
+        )
+
+    content = stored["content"]
+    lines = []
+
+    # Title
+    lines.append(f"# {content.get('title', 'Presentation')}")
+    lines.append("")
+    if content.get("subtitle"):
+        lines.append(f"*{content['subtitle']}*")
+        lines.append("")
+    if content.get("author"):
+        lines.append(f"**Author:** {content['author']}")
+        lines.append("")
+    lines.append("---")
+    lines.append("")
+
+    # Content slides
+    for i, slide in enumerate(content.get("slides", []), 1):
+        lines.append(f"## Slide {i}: {slide.get('title', 'Untitled')}")
+        lines.append("")
+        for bullet in slide.get("bullets", []):
+            lines.append(f"- {bullet}")
+        lines.append("")
+        if slide.get("speaker_notes"):
+            lines.append(f"> **Speaker Notes:** {slide['speaker_notes']}")
+            lines.append("")
+
+    # Closing
+    closing = content.get("closing", {})
+    if closing:
+        lines.append("---")
+        lines.append("")
+        lines.append(f"## {closing.get('title', 'Thank You')}")
+        lines.append("")
+        for bullet in closing.get("bullets", []):
+            lines.append(f"- {bullet}")
+        lines.append("")
+        if closing.get("speaker_notes"):
+            lines.append(f"> **Speaker Notes:** {closing['speaker_notes']}")
+            lines.append("")
+
+    lines.append("---")
+    lines.append("*Generated with SlideAI*")
+
+    markdown_text = "\n".join(lines)
+    return PlainTextResponse(
+        content=markdown_text,
+        media_type="text/markdown",
+        headers={"Content-Disposition": f'attachment; filename="{file_id}.md"'}
+    )
+
+
 @app.get("/api/download/{file_id}")
 async def download_presentation(file_id: str):
     """Download a generated .pptx file."""
@@ -178,11 +359,6 @@ async def list_templates():
     return {"templates": get_available_templates()}
 
 
-@app.get("/api/health")
-async def health_check():
-    return {"status": "ok", "version": "2.0.0"}
-
-
 # ── Serve Frontend ─────────────────────────────────────────────────────────────
 
 @app.get("/")
@@ -204,7 +380,7 @@ if FRONTEND_DIR.exists():
 if __name__ == "__main__":
     import uvicorn
     print("\n" + "=" * 60)
-    print("  AI PPT Generator SaaS")
+    print("  SlideAI - AI PPT Generator SaaS")
     print("  http://localhost:8000")
     print("=" * 60)
 
