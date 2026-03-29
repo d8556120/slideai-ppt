@@ -541,8 +541,26 @@ async def generate_content(prompt: str, slide_count: int = 8,
     Returns:
         dict with structured presentation content
     """
-    api_key = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("ANTHROPIC_AUTH_TOKEN", "")
-    base_url = os.environ.get("OPENAI_BASE_URL", "") or os.environ.get("ANTHROPIC_BASE_URL", "") or "https://api.openai.com/v1"
+    # Select API based on language: DeepSeek for non-English, Groq for English
+    GROQ_KEY = os.environ.get("GROQ_API_KEY", "")
+    GROQ_URL = "https://api.groq.com/openai/v1"
+    GROQ_MODEL = "llama-3.3-70b-versatile"
+
+    DEEPSEEK_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+    DEEPSEEK_URL = "https://api.deepseek.com/v1"
+    DEEPSEEK_MODEL = "deepseek-chat"
+
+    # Fallback to generic OPENAI_* env vars
+    fallback_key = os.environ.get("OPENAI_API_KEY", "") or os.environ.get("ANTHROPIC_AUTH_TOKEN", "")
+    fallback_url = os.environ.get("OPENAI_BASE_URL", "") or "https://api.openai.com/v1"
+    fallback_model = os.environ.get("OPENAI_MODEL", "gpt-4o")
+
+    if language != "English" and DEEPSEEK_KEY:
+        api_key, base_url, model = DEEPSEEK_KEY, DEEPSEEK_URL, DEEPSEEK_MODEL
+    elif GROQ_KEY:
+        api_key, base_url, model = GROQ_KEY, GROQ_URL, GROQ_MODEL
+    else:
+        api_key, base_url, model = fallback_key, fallback_url, fallback_model
 
     # If no API key or openai not installed, use demo mode
     if not api_key or OpenAI is None:
@@ -571,7 +589,7 @@ Remember to return ONLY valid JSON matching the required structure.{language_rem
             client = OpenAI(api_key=api_key, base_url=base_url)
 
             response = client.chat.completions.create(
-                model=os.environ.get("OPENAI_MODEL", "gpt-4o"),
+                model=model,
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": user_message}
